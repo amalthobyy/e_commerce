@@ -1,0 +1,77 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block content %}
+<head> 
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 2000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .dashboard-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .dashboard-section h2 {
+            margin-top: 0;
+            color: #444;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #000;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .logout-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>USER DASHBOARD</h1>
+        
+        <div class="dashboard-section">
+            <h2>Orders</h2>
+            <p>View and manage your recent orders.</p>
+            <a href="#" class="btn">View Orders</a>
+        </div>
+        
+        <div class="dashboard-section">
+            <h2>My Addresses</h2>
+            <p>Manage your shipping and billing addresses.</p>
+            <a href="#" class="btn">Manage Addresses</a>
+        </div>
+        
+        <div class="dashboard-section">
+            <h2>Account Settings</h2>
+            <p>Update your personal information and preferences.</p>
+            <a href="#" class="btn">Edit Settings</a>
+        </div>
+        
+        <a href="#" class="btn logout-btn">Logout</a>
+    </div>
+</body>
+</html>
+
+{% endblock %}
