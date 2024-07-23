@@ -1,0 +1,117 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block content %}
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="form-container">
+    <form method="post" action="{% url 'accounts:verify_otp' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="timer" id="timer">2:00</div>
+        <button type="submit" class="verify-btn">Verify OTP</button>
+    </form>
+
+    <a href="{% url 'accounts:resend_otp' %}"><button type="submit" id="resend-btn" class="resend-btn" style="display: none;">RESEND OTP</button></a>
+</div>
+
+<style>
+    .form-container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+    }
+    .form-container form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-container .timer {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+    }
+    .form-container button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+    }
+    .verify-btn {
+        background-color: #4CAF50;
+        color: white;
+    }
+    .resend-btn {
+        background-color: #008CBA;
+        color: white;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var timerDisplay = document.getElementById('timer');
+        var resendButton = document.getElementById('resend-btn');
+        var totalTime = 120; // 2 minutes in seconds
+
+        var remainingTime = sessionStorage.getItem('remainingTime');
+        var lastSavedTime = sessionStorage.getItem('lastSavedTime');
+
+        if (remainingTime !== null && lastSavedTime !== null) {
+            var elapsedTime = Math.floor(Date.now() / 1000) - parseInt(lastSavedTime, 10);
+            remainingTime = parseInt(remainingTime, 10) - elapsedTime;
+        } else {
+            remainingTime = totalTime;
+        }
+
+        if (remainingTime <= 0) {
+            remainingTime = 0;
+            resendButton.style.display = 'block';
+            sessionStorage.removeItem('remainingTime');
+            sessionStorage.removeItem('lastSavedTime');
+        } else {
+            resendButton.style.display = 'none';
+        }
+
+        function updateDisplay(time) {
+            var minutes = Math.floor(time / 60);
+            var seconds = time % 60;
+
+            if (seconds < 10) {
+                seconds = '0' + seconds;
+            }
+
+            timerDisplay.textContent = minutes + ':' + seconds;
+        }
+
+        updateDisplay(remainingTime);
+
+        var interval = setInterval(function() {
+            if (remainingTime <= 0) {
+                clearInterval(interval);
+                resendButton.style.display = 'block';
+                sessionStorage.removeItem('remainingTime');
+                sessionStorage.removeItem('lastSavedTime');
+            } else {
+                remainingTime--;
+                updateDisplay(remainingTime);
+                sessionStorage.setItem('remainingTime', remainingTime);
+                sessionStorage.setItem('lastSavedTime', Math.floor(Date.now() / 1000));
+            }
+        }, 1000);
+    });
+</script>
+{% endblock %}
