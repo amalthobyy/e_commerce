@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.views import View
-from dripdeck.product.models import* 
+from product.models import* 
 
 # Create your views here.
 

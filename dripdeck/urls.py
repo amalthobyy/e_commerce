@@ -24,7 +24,8 @@ urlpatterns = [
     path('',include('accounts.urls')),
     path('admindash/',include('admindash.urls')),
     path('admindash/',include('category.urls')),
-    path('brand/',include('brand.urls'))
+    path('brand/',include('brand.urls')),
+    path('product/',include('product.urls')),
 
 
 ]
