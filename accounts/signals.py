@@ -7,7 +7,7 @@ from .models import User
 
 @receiver(post_save, sender=User)
 def send_welcome_email(sender, instance, created, **kwargs):
-    if created:
+    if created and not instance.is_superuser:
         subject = 'Welcome to DripCartel'
         message = f'Hi {instance.first_name}, thank you for registering at DripCartel.'
         from_email = settings.DEFAULT_FROM_EMAIL

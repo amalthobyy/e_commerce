@@ -1,0 +1,110 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block title %} <title>Category Management</title>{% endblock title %}
+{% block content  %}
+<section class="content-main">
+    <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="content-title card-title mb-0">Category Management</h2>
+        </div>
+        <div>
+            <a href="{% url 'category:create-category' %}" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create Category</a>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Search..." class="form-control" />
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Status</option>
+                        <option>Active</option>
+                        <option>Disabled</option>
+                        <option>Show all</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Show 20</option>
+                        <option>Show 30</option>
+                        <option>Show 40</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+        <!-- card-header end// -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Category Name</th>
+                            <th>Slug</th>
+                            <th>Availability</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                        <tr>
+                            <td>{{ category.id }}</td>
+                            <td>{{ category.category_name }}</td>
+                            <td>{{ category.slug }}</td>
+                            <td>
+                                {% if category.is_available %}
+                                    <span class="badge rounded-pill bg-success text-dark">Available</span>
+                                {% else %}
+                                    <span class="badge rounded-pill bg-danger text-dark">Unavailable</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'category:available-category' category.id %}" class="btn btn-warning btn-sm me-2" onclick="confirmAction('{% url 'category:available-category' category.id %}', '{% if category.is_available %}Are you sure you want to delete this category?{% else %}Are you sure you want to restore this category?{% endif %}')">
+                                        {% if category.is_available %}Delete{% else %}Restore{% endif %}
+                                    </a>
+                                    <a href="{% url 'category:edit-category'  category.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div> <!-- table-responsive//end -->
+        </div>
+        <!-- card-body end// -->
+    </div>
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</section> 
+
+<script>
+    function confirmAction(url, message) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: message,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
+</script>
+{% endblock content  %}

@@ -1,0 +1,72 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block title %} <title>Product Management</title>{% endblock title %}
+{% block content %}
+<section class="content-main">
+    <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="content-title card-title mb-0">Product Management</h2>
+        </div>
+        <div>
+            <a href="{% url 'product:create_product' %}" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create Product</a>
+        </div>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th>Status</th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        {% if product.thumbnail %}
+                        <img src="{{ product.thumbnail.url }}" class="img-fluid rounded" style="width: 50px; height: auto;" alt="{{ product.product_name }}">
+                        {% else %}
+                        <img src="{% static 'placeholder_image.jpg' %}" class="img-fluid rounded" style="width: 50px; height: auto;" alt="Placeholder Image">
+                        {% endif %}
+                    </td>
+                    <td>{{ product.product_name }}</td>
+                    <td>{% if product.product_category %}{{ product.product_category.category_name }}{% else %}No category{% endif %}</td>
+                    <td>{% if product.product_brand %}{{ product.product_brand.brand_name }}{% else %}No brand{% endif %}</td>
+                    {% comment %} <td>{{ product.price }}</td>
+                    <td>{{ product.offer_price }}</td>
+                    <td>{{ product.percentage_discount }}%</td> {% endcomment %}
+                    <td>
+                        <span class="badge rounded-pill {% if product.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ product.is_active|yesno:"Active,Inactive" }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'product:product_detail' product.id %}" class="btn btn-warning me-2">More</a>
+                    </td> 
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+{% endblock content %}

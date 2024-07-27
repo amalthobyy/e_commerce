@@ -1,0 +1,153 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block title %} <title>Brands Management</title>{% endblock title %}
+{% block content %}
+<style>
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .table thead th {
+        text-align: center;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+    }
+
+    .img-thumbnail {
+        max-width: 100px;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+    }
+
+    .pagination-area {
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #3085d6;
+        border-color: #3085d6;
+    }
+
+    .content-header .btn-primary {
+        margin-left: auto;
+    }
+</style>
+
+<section class="content-main">
+    <div class="content-header d-flex justify-content-between align-items-center mb-4">
+        <h2 class="content-title card-title mb-0">Brands</h2>
+        <a href="{% url 'brand:create_brand' %}" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create Brands</a>
+    </div>
+
+    <div class="card mb-4">
+        <header class="card-header">
+            <div class="row gx-3">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <input type="text" placeholder="Search..." class="form-control" />
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Status</option>
+                        <option>Active</option>
+                        <option>Disabled</option>
+                        <option>Show all</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select class="form-select">
+                        <option>Show 20</option>
+                        <option>Show 30</option>
+                        <option>Show 40</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover text-center align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Brand Logo</th>
+                            <th>Brand Name</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for brand in brand %}
+                        <tr>
+                            <td>{{ brand.id }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    {% if brand.brand_image %}
+                                        <img src="{{ brand.brand_image.url }}" alt="{{ brand.brand_name }}" class="img-thumbnail" style="max-height: 100px;">
+                                    {% else %}
+                                        No image available
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>{{ brand.brand_name }}</td>
+                            <td>
+                                <span class="badge {% if brand.is_active %}rounded-pill bg-success text-dark{% else %}rounded-pill bg-danger text-dark{% endif %}">
+                                    {{ brand.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <a href="{% url 'brand:edit_brand' brand.id %}" class="btn btn-warning btn-sm me-2" style="padding: 5px 10px;">Edit</a>
+                                    <form method="POST" action="{% url 'brand:delete_brand' brand.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-{% if brand.is_active %}danger{% else %}success{% endif %} btn-sm" style="padding: 5px 10px;" >{% if brand.is_active %}Delete{% else %}Restore{% endif %}</button>
+                                    </form>
+                                    
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</section> 
+
+<script>
+    function confirmStatusChange(event) {
+        event.preventDefault();
+        const form = event.target.closest('form');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to change the status.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+</script>
+{% endblock content %}

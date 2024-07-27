@@ -1,0 +1,45 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block title %} 
+<title>Create New Category</title>
+{% endblock title %}
+{% block content %}
+<div class="container mt-5">
+   
+    <div class="card p-4">
+        <h2>Create New Category</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="category_name">Category Name:</label>
+                <input type="text" name="category_name" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Save</button>
+            
+        </form>
+        <a href="{% url 'category:list-category' %}"><button class="btn btn-primary mt-3">Cancel</button></a>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+    {% if messages %}
+        const messages = [
+            {% for message in messages %}
+                "{{ message }}",
+            {% endfor %}
+        ];
+        messages.forEach(message => {
+            Swal.fire({
+                toast: true,
+                position: 'top-right',
+                icon: 'success',
+                title: message,
+                showConfirmButton: false,
+                timer: 3000
+            });
+        });
+    {% endif %}
+});
+</script>
+{% endblock content %}

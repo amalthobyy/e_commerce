@@ -1,0 +1,71 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block title %} <title>Brands Management</title>{% endblock title %}
+{% block content  %}
+<div class="container mt-5">
+    <div class="card p-4">
+        <h1 class="text-center mb-4">Create Brand</h1>
+        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="brand_name">Brand Name:</label>
+                <input type="text" id="brand_name" name="brand_name" class="form-control" required>
+                <div class="invalid-feedback">
+                    Please enter a brand name.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="brand_image">Brand Image:</label>
+                <input type="file" id="brand_image" name="brand_image" class="form-control-file" required>
+                <div class="invalid-feedback">
+                    Please upload a brand image.
+                </div>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" id="status" name="status" class="form-check-input">
+                <label for="status" class="form-check-label">Status</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-3">Save</button>
+            <a href="{% url 'brand:list_brand' %}" class="btn btn-primary mt-3 btn-block">Cancel</a>
+        </form>
+       
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+</style>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // Validate form fields on submit
+    (function () {
+        'use strict';
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation');
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+
+                    form.classList.add('was-validated');
+                }, false);
+            });
+    })();
+</script>
+{% endblock content %}

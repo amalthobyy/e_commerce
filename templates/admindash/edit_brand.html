@@ -1,0 +1,31 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block title %} <title>Edit Brand</title> {% endblock title %}
+{% block content %}
+<div class="container mt-5">
+    <h1>Edit Brand</h1>
+    <form method="POST" enctype="multipart/form-data" style="padding: 20px;">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="brand_name">Brand Name</label>
+            <input type="text" class="form-control" id="brand_name" name="brand_name" value="{{ brand.brand_name }}" required style="padding: 10px;">
+        </div>
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" name="status" required style="padding: 10px;">
+                <option value="True" {% if brand.is_active %}selected{% endif %}>Active</option>
+                <option value="False" {% if not brand.is_active %}selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="brand_image">Brand Image</label>
+            <input type="file" class="form-control-file" id="brand_image" name="brand_image" style="padding: 10px;">
+            {% if brand.brand_image %}
+                <img src="{{ brand.brand_image.url }}" alt="{{ brand.brand_name }}" class="img-thumbnail mt-2" style="height: 100px;">
+            {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary" style="padding: 10px;">Save Changes</button>
+        <a href="{% url 'brand:list_brand' %}" class="btn btn-secondary" style="padding: 10px;">Cancel</a>
+    </form>
+</div>
+{% endblock content %}

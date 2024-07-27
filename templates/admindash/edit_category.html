@@ -1,0 +1,21 @@
+{% extends 'admindash/base_admin.html' %}
+{% block title %}Edit Category{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Category</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="category_name">Category Name:</label>
+            <input type="text" name="category_name" class="form-control" value="{{ category.category_name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="slug">Slug:</label>
+            <input type="text" name="slug" class="form-control" value="{{ category.slug }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    <a href="{% url 'category:list-category' %}"><button class="btn btn-primary mt-3">Cancel</button></a>
+</div>
+{% endblock %}
