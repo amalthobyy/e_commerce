@@ -1,0 +1,62 @@
+{% extends 'admindash/base_admin.html' %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Edit Product</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="product_name" class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="product_name" name="product_name" value="{{ product.product_name }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="product_description" class="form-label">Product Description</label>
+            <textarea class="form-control" id="product_description" name="product_description" rows="5" required>{{ product.product_description }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="product_category" class="form-label">Category</label>
+            <select class="form-select" id="product_category" name="product_category">
+                <option value="">Select Category</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if product.product_category and product.product_category.id == category.id %}selected{% endif %}>{{ category.category_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="product_brand" class="form-label">Brand</label>
+            <select class="form-select" id="product_brand" name="product_brand">
+                <option value="">Select Brand</option>
+                {% for brand in brands %}
+                    <option value="{{ brand.id }}" {% if product.product_brand and product.product_brand.id == brand.id %}selected{% endif %}>{{ brand.brand_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="price" class="form-label">Price</label>
+            <input type="number" step="0.01" class="form-control" id="price" name="price" value="{{ product.price }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="offer_price" class="form-label">Offer Price</label>
+            <input type="number" step="0.01" class="form-control" id="offer_price" name="offer_price" value="{{ product.offer_price }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="thumbnail" class="form-label">Thumbnail</label>
+            <input type="file" class="form-control" id="thumbnail" name="thumbnail">
+            {% if product.thumbnail %}
+                <img src="{{ product.thumbnail.url }}" alt="{{ product.product_name }}" class="img-thumbnail mt-2" width="150">
+            {% endif %}
+        </div>
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" id="is_active" name="is_active" {% if product.is_active %}checked{% endif %}>
+            <label class="form-check-label" for="is_active">Is Active</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Product</button>
+       
+    </form>
+    <a href="{% url 'product:product-detail' product.id %}"><button class="btn btn-primary mt-3 mb-3">Back</button></a>
+
+   
+</div>
+{% endblock %}

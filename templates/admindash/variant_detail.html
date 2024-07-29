@@ -1,0 +1,71 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1> {{ product.product_name }}</h1>
+        </div>
+        <div>
+            <a href="{% url 'product:add-variant' product.id %}" class="btn btn-primary">
+                <i class="text-muted material-icons md-post_add"></i>Create Variant
+            </a>
+        </div>
+    </div>
+
+    {% for variant in variants %}
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>{{ variant.product.product_name }} - {{ variant.size }} - {{ variant.colour_name }}</h5>
+            <div>
+                <a href="{% url 'product:edit-variant' variant.id %}" class="btn btn-sm btn-warning">
+                    Edit
+                </a>
+                <a href="{% url 'product:variant-status' variant.id %}" class="btn btn-sm {% if variant.variant_status %}btn-danger{% else %}btn-success{% endif %}">
+                    {% if variant.variant_status %}Delete{% else %}Restore{% endif %}
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Display images for this variant -->
+                <div class="col-md-4">
+                    <h6>Images for {{ variant.product.product_name }} - {{ variant.colour_name }}</h6>
+                    <div class="d-flex flex-wrap">
+                        {% for image in variant.product_variant_images_set.all %}
+                        <div class="p-2">
+                            <img src="{{ image.images.url }}" class="img-fluid img-thumbnail" alt="Variant Image" width="100">
+                        </div>
+                        {% empty %}
+                        <p>No images available for this variant</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Display details for this variant -->
+                <div class="col-md-8">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Stock</th>
+                                <td>{{ variant.variant_stock }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{% if variant.variant_status %}Active{% else %}Inactive{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th>Colour Code</th>
+                                <td>{{ variant.colour_code }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block title %} 
+<title>Product Detail</title>
+{% endblock title %}
+{% block content %}
+<section class="content-main">
+    <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="content-title card-title mb-0">Product Detail</h2>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="row g-0">
+            <div class="col-md-1">
+                <div class="thumbnail-list">
+                    {% for image in images %}
+                    <img src="{{ image.images.url }}" class="img-fluid img-thumbnail thumbnail-image" alt="Product Image" onclick="swapImage(this)">
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="main-thumbnail mb-3">
+                    {% if products.thumbnail %}
+                    <img id="main-thumbnail" src="{{ products.thumbnail.url }}" class="img-fluid rounded main-image" alt="{{ products.product_name }}">
+                    {% else %}
+                    <img id="main-thumbnail" src="{% static 'placeholder_image.jpg' %}" class="img-fluid rounded main-image" alt="Placeholder Image">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-body">
+                    <h5 class="card-title">{{ products.product_name }}</h5>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Category</th>
+                                <td>{% if products.product_category %}{{ products.product_category.category_name }}{% else %}No category{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Brand</th>
+                                <td>{% if products.product_brand %}{{ products.product_brand.brand_name }}{% else %}No brand{% endif %}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Price</th>
+                                <td>{{ products.price }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Offer Price</th>
+                                <td>{{ products.offer_price }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Discount</th>
+                                <td>{{ products.percentage_discount }}%</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Status</th>
+                                <td>
+                                    <span class="badge rounded-pill {% if products.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ products.is_active|yesno:"Active,Inactive" }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Description</th>
+                                <td>{{ products.product_description }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="btn-group mt-3" role="group">
+                        <form method="post" action="{% url 'product:product-status' products.id %}" id="statusForm{{ products.id }}">
+                            {% csrf_token %}
+                            <button type="button" class="btn {% if products.is_active %}btn-danger{% else %}btn-success{% endif %} me-2 status-button" data-product-id="{{ products.id }}">Status</button>
+                        </form>
+                        <a href="{% url 'product:edit-product' products.id %}" class="btn btn-warning me-2">Edit</a>
+                        {% comment %} <a href="{% url 'product:add-images' products.id %}" class="btn btn-info me-2">Add Images</a> {% endcomment %}
+                        <a href="{% url 'product:variant-detail' products.id %}" class="btn btn-secondary me-2">Variant</a>
+                        <a href="{% url 'product:list_product' %}" class="btn btn-secondary me-2">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    function swapImage(thumbnail) {
+        var mainThumbnail = document.getElementById('main-thumbnail');
+        var mainThumbnailSrc = mainThumbnail.src;
+        mainThumbnail.src = thumbnail.src;
+        thumbnail.src = mainThumbnailSrc;
+    }
+
+    function confirmStatusChange(productId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to change the status.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('statusForm' + productId).submit();
+            }
+        });
+    }
+
+    document.querySelectorAll('.status-button').forEach(item => {
+        item.addEventListener('click', event => {
+            event.preventDefault();
+            const productId = item.getAttribute('data-product-id');
+            confirmStatusChange(productId);
+        });
+    });
+</script>
+
+<style>
+    .main-image {
+        max-width: 100%;
+        max-height: 500px;
+        object-fit: contain;
+    }
+    .thumbnail-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+</style>
+
+{% endblock content %}

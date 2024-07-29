@@ -1,0 +1,324 @@
+{% extends 'admindash/base_admin.html' %} {% block content %}
+<div class="screen-overlay"></div>
+<main class="main-wrap">
+  <!--  modal section starts-->
+  <button
+    type="button"
+    style="display: none"
+    id="openCropperModalBtn"
+    data-bs-toggle="modal"
+    data-bs-target="#cropperModal"
+  ></button>
+
+  <div
+    class="modal fade"
+    id="cropperModal"
+    tabindex="-1"
+    aria-labelledby="cropperModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div
+          class="modal-body"
+          style="
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <img id="imageToCrop" style="max-width: 100%; max-height: 100%" />
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button type="button" id="cropAndSave" class="btn btn-primary">
+            Crop and Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--  modal section ends-->
+
+  <section class="content-main">
+    <div class="row">
+      <!-- Content Header -->
+      <div class="col-12 mb-3">
+        <div class="content-header">
+          <h2 class="content-title">Add Product Images</h2>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h4>Product Details</h4>
+          </div>
+          <div class="card-body">
+            <form
+              method="post"
+              action="#"
+              enctype="multipart/form-data"
+              
+            >
+              {% csrf_token %}
+              <div class="mb-4">
+                <label class="form-label">Thumbnail Image</label>
+                <input
+                  class="form-control"
+                  type="file"
+                  id="thumbnailInput"
+                  name="thumbnail"
+                />
+                <div
+                  id="thumbnailPreview"
+                  style="
+                    width: 100%;
+                    overflow: auto;
+                    border: 1px solid #ddd;
+                    padding: 10px;
+                    margin-top: 10px;
+                  "
+                ></div>
+              </div>
+
+              <div class="input-upload">
+                <label class="form-label">Additional Images</label>
+                <input
+                  class="form-control"
+                  id="fileAccess"
+                  type="file"
+                  name="images"
+                  multiple
+                />
+
+                <div class="container" style="width: 100%">
+                  <h4 style="padding-top: 5px">Image Preview</h4>
+                  <div
+                    id="imagePreview"
+                    style="
+                      width: 100%;
+                      overflow: auto;
+                      border: 1px solid #ddd;
+                      padding: 10px;
+                    "
+                  ></div>
+                </div>
+              </div>
+
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  padding-top: 15px;
+                "
+              >
+                <button
+                  type="submit"
+                  class="btn btn-md rounded font-sm hover-up"
+                  id="submitForm"
+                >
+                  Add Images
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const thumbnailInput = document.getElementById("thumbnailInput");
+    const thumbnailPreview = document.getElementById("thumbnailPreview");
+    const imageInput = document.getElementById("fileAccess");
+    const imagePreview = document.getElementById("imagePreview");
+    const openCropperModalBtn = document.getElementById("openCropperModalBtn");
+    const imageToCrop = document.getElementById("imageToCrop");
+    const cropAndSave = document.getElementById("cropAndSave");
+    const cropperModalElement = document.getElementById("cropperModal");
+    var actionUrl = "{% url 'product:add-images' product.id %}";
+
+    let cropper;
+    let currentImage;
+    let croppedImageBlob = null;
+
+    thumbnailInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = (event) => {
+        const img = document.createElement("img");
+        img.src = event.target.result;
+        img.className = "imagePreview";
+        img.style.maxWidth = "280px";
+        img.style.maxHeight = "280px";
+        img.style.marginRight = "10px";
+        img.style.objectFit = "cover";
+
+        thumbnailPreview.innerHTML = "";
+        thumbnailPreview.appendChild(img);
+
+        img.addEventListener("click", () => {
+          imageToCrop.src = img.src;
+          currentImage = img;
+          openCropperModalBtn.click(); // Using the hidden button to open the modal
+        });
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    imageInput.addEventListener("change", (event) => {
+      const files = event.target.files;
+
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+          const imageContainer = document.createElement("div");
+          imageContainer.style.position = "relative";
+          imageContainer.style.marginBottom = "10px";
+          imageContainer.style.display = "flex";
+          imageContainer.style.alignItems = "center";
+          imageContainer.style.justifyContent = "space-between";
+
+          const img = document.createElement("img");
+          img.src = event.target.result;
+          img.className = "imagePreview";
+          img.style.maxWidth = "280px";
+          img.style.maxHeight = "280px";
+          img.style.marginRight = "10px";
+          img.style.objectFit = "cover";
+
+          const buttonContainer = document.createElement("div");
+          buttonContainer.style.display = "flex";
+          buttonContainer.style.flexDirection = "column";
+
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "btn btn-danger btn-sm mb-2";
+          deleteButton.innerText = "Remove";
+          deleteButton.addEventListener("click", () => {
+            imageContainer.remove();
+          });
+
+          buttonContainer.appendChild(deleteButton);
+          imageContainer.appendChild(img);
+          imageContainer.appendChild(buttonContainer);
+          imagePreview.appendChild(imageContainer);
+
+          img.addEventListener("click", () => {
+            imageToCrop.src = img.src;
+            currentImage = img;
+            openCropperModalBtn.click(); // Using the hidden button to open the modal
+          });
+        };
+
+        reader.readAsDataURL(file);
+      });
+    });
+
+    cropperModalElement.addEventListener("shown.bs.modal", () => {
+      cropper = new Cropper(imageToCrop, {
+        aspectRatio: 1,
+        viewMode: 2,
+        autoCropArea: 1,
+      });
+    });
+
+    cropperModalElement.addEventListener("hidden.bs.modal", () => {
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+    });
+
+    cropAndSave.addEventListener("click", () => {
+      if (cropper) {
+        const canvas = cropper.getCroppedCanvas();
+
+        canvas.toBlob((blob) => {
+          croppedImageBlob = blob;
+          const url = URL.createObjectURL(blob);
+          currentImage.src = url;
+
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(
+            new File([blob], "croppedImage.jpg", { type: "image/jpeg" })
+          );
+
+          if (
+            currentImage.parentElement.parentElement.id === "thumbnailPreview"
+          ) {
+            thumbnailInput.files = dataTransfer.files;
+          } else {
+            imageInput.files = dataTransfer.files;
+          }
+
+          $("#cropperModal").modal("hide");
+        });
+      }
+    });
+
+    document
+      .getElementById("submitForm")
+      .addEventListener("submit", (event) => {
+        const form = event.target;
+        const formData = new FormData(form);
+
+        if (croppedImageBlob) {
+          formData.append(
+            "thumbnail",
+            croppedImageBlob,
+            "croppedThumbnail.jpg"
+          );
+        }
+
+        fetch(actionUrl, {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            console.log(response);
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Success:", data);
+          })
+          .catch((error) => {
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+          });
+
+        event.preventDefault();
+      });
+  });
+</script>
+{% endblock content %}
