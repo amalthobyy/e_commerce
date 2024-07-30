@@ -165,12 +165,15 @@ def add_variant_image(request, product_variant_id):
 
 
 def delete_image(request, image_id):
-    try:
-        image = Product_variant_images.objects.get(id=image_id)
-        image.delete()
-        return JsonResponse({'success': True})
-    except Product_variant_images.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Image not found'}, status=404)
+    if request.method == 'DELETE':
+        print('hlo')
+        try:
+            image = Product_variant_images.objects.get(id=image_id)
+            image.delete()
+            return JsonResponse({'success': True})
+        except Product_variant_images.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Image not found'}, status=404)
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
 
 
 def variant_detail(request, product_id):

@@ -8,7 +8,6 @@
     <div class="content-header">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Edit Variant - {{ variant.product.product_name }}</h1>
-            
         </div>
     </div>
 
@@ -40,7 +39,7 @@
                     <label class="form-check-label" for="variant_status">Active</label>
                 </div>
                 
-                {% if variant_images  %}
+                {% if variant_images %}
                 <div class="mt-4">
                     <h5>Current Images</h5>
                     <div class="row">
@@ -62,16 +61,15 @@
                     <small class="form-text text-muted">Please upload valid image files.</small>
                 </div>
 
-
                 <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
-               
+                <a href="{% url 'product:variant-detail' variant.product.id %}"><button type="button" class="btn btn-secondary mt-3">Cancel</button></a>
             </form>
-            <a href="{% url 'product:variant-detail' variant.product.id %}" ><button class="btn btn-primary mt-3">Cancel</button></a>
         </div>
     </div>
 </div>
- <!-- Image Preview Section -->
- <div class="container mt-4" style="width: 100%">
+
+<!-- Image Preview Section -->
+<div class="container mt-4" style="width: 100%">
     <h4 style="padding-top: 5px">Image Preview</h4>
     <div id="imagePreview" style="width: 100%; overflow: auto; border: 1px solid #ddd; padding: 10px;"></div>
 </div>
@@ -96,7 +94,6 @@
         </div>
     </div>
 </div>
-</div>
 
 <style>
 .error {
@@ -108,11 +105,14 @@
     line-height: 1.2;
 }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("variant-image-form");
+    const form = document.querySelector("form");
     const imageInput = document.getElementById("images");
     const imagePreview = document.getElementById("imagePreview");
     const openCropperModalBtn = document.getElementById("openCropperModalBtn");
@@ -237,7 +237,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 updateFileInput();
 
-                $('#cropperModal').modal('hide');
+                const modalElement = bootstrap.Modal.getInstance(cropperModalElement);
+                modalElement.hide();
             }, 'image/jpeg');
         }
     });
@@ -258,6 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 </script>
+
 <script>
     function deleteImage(imageId) {
         Swal.fire({
@@ -270,23 +272,30 @@ document.addEventListener("DOMContentLoaded", () => {
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch("{% url 'product:delete-image' 0 %}".replace('0', imageId), {
-                    method: 'DELETE',
+                $.ajax({
+                    url: "{% url 'product:delete-image' 0 %}".replace('0', imageId),
+                    type: 'DELETE',
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire(
-                            'Deleted!',
-                            'The image has been deleted.',
-                            'success'
-                        ).then(() => {
-                            location.reload();
-                        });
-                    } else {
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            Swal.fire(
+                                'Deleted!',
+                                'The image has been deleted.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                data.error || 'There was an error deleting the image.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function () {
                         Swal.fire(
                             'Error!',
                             'There was an error deleting the image.',
@@ -298,4 +307,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 </script>
+
 {% endblock %}
