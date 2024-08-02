@@ -26,8 +26,7 @@ urlpatterns = [
     path('admindash/',include('category.urls')),
     path('brand/',include('brand.urls')),
     path('product/',include('product.urls')),
-
-
+    path('auth/', include('social_django.urls', namespace='social')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

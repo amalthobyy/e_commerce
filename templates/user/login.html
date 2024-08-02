@@ -1,5 +1,5 @@
 {% extends 'user/base.html' %}
-{% load socialaccount %}
+{% comment %} {% load socialaccount %} {% endcomment %}
 
 {% block content %}
 <div class="container">
@@ -28,31 +28,18 @@
             <p class="text-center mb-3">or sign in with</p>
             
             <div class="d-grid gap-2 mb-3">
-                <button onclick="signInWithGoogle()" class="btn btn-outline-secondary">
-                    SIGN IN USING GOOGLE
+                <button  class="btn btn-outline-secondary">
+                    <a style="color:white;" href="{% url 'social:begin' 'google-oauth2' %}">Sign in with Google</a>
                 </button>
-                <button onclick="signInWithFacebook()" class="btn btn-outline-secondary">
-                    SIGN IN USING FACEBOOK
-                </button>
+                
             </div>
             
-            <div class="text-center">
+             <div class="text-center">
                 <a href="#" class="text-decoration-none">Forgot your password?</a> |
                 <a href="{% url 'accounts:signup' %}" class="text-decoration-none">Create account</a>
-            </div>
+            </div> 
         </div>
     </div>
 </div>
 
-<script>
-function signInWithGoogle() {
-    // Add Google sign-in logic here
-    console.log('Sign in with Google clicked');
-}
-
-function signInWithFacebook() {
-    // Add Facebook sign-in logic here
-    console.log('Sign in with Facebook clicked');
-}
-</script>
 {% endblock %}

@@ -68,6 +68,8 @@ class CreateProductView(View):
     
 def edit_product(request, product_id):
     product = get_object_or_404(Products, id=product_id)
+    categories = Category.objects.all()
+    brands = Brand.objects.all()
     if request.method == 'POST':
         product.product_name = request.POST.get('product_name')
         product.product_description = request.POST.get('product_description')
@@ -233,5 +235,10 @@ def shop_page(request):
 
 def product_details(request,pk):
     products = Products.objects.get(id=pk)
+    variants = Product_Variant.objects.filter(product=products)
+    images = []
+    for variant in variants:
+        variant_images = Product_variant_images.objects.filter(product_variant=variant)
+        images.extend(variant_images)
     
-    return render(request,'user/product/product_details.html',{'products':products})
+    return render(request,'user/product/product_details.html',{'products':products,'images':images,'variant':variant})
