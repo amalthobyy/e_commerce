@@ -1,15 +1,11 @@
-from django.urls import path 
-from . import views
-from . views import *
-
+from django.urls import path
+from .views import list_brand, create_brand, EditBrand, DeleteBrandView
 
 app_name = 'brand'
 
 urlpatterns = [
-
-  path('brand',views.list_brand,name='list_brand'),
-  path('create',views.create_brand,name='create_brand'),
-  path('edit/<int:pk>/', EditBrand.as_view(), name='edit_brand'),
-  path('delete/<int:pk>/',DeleteBrandView.as_view(),name='delete_brand'),
-
+    path('brand', list_brand, name='list_brand'),
+    path('create', create_brand, name='create_brand'),
+    path('edit/<int:pk>/', EditBrand.as_view(), name='edit_brand'),
+    path('delete/<int:pk>/', DeleteBrandView.as_view(), name='delete_brand'),
 ]

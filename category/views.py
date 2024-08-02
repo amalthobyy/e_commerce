@@ -6,9 +6,11 @@ from django.db import IntegrityError
 # Create your views here.
 
 
+
 def list_category(request):
     categories = Category.objects.all().order_by('id')
     return render(request,'admindash/list_category.html',{'categories':categories})
+
 
 
 def create_category(request):
@@ -29,6 +31,7 @@ def create_category(request):
 
 
 
+
 def edit_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     if request.method == 'POST':
@@ -44,8 +47,10 @@ def edit_category(request, category_id):
     return render(request, 'admindash/edit_category.html', {'category': category})
 
 
+
 def category_is_available(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     category.is_available = not category.is_available
     category.save()
     return redirect('category:list-category')
+

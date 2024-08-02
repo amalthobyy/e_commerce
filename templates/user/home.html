@@ -1,7 +1,20 @@
 {% extends 'user/base.html' %}
 {% load static %}
 {% block content %}
-
+<style>
+    .logo-bar__item {
+        width: 150px; /* Set the desired width */
+        height: 150px; /* Set the desired height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden; /* Hide any overflow */
+        border: 1px solid #ddd; /* Optional: Add a border */
+        margin: 5px; /* Optional: Add some margin */
+    }
+    
+    
+</style>
 <div class="mobile-nav-wrapper" role="navigation">
     <div class="closemobileMenu"><i class="icon anm anm-times-l pull-right"></i> Close Menu</div>
     <ul id="MobileNav" class="mobile-nav">
@@ -75,15 +88,18 @@
             </div>
             <div class="grid-products grid-products-hover-btn">
                 <div class="productSlider-style1">
+                    {% for product in products %}
                     <div class="col-12 item grid-view-item style2">
                         <div class="grid-view_image">
                             <!-- start product image -->
                             <a href="product-layout-2.html" class="grid-view-item__link">
                                 <!-- image -->
-                                <img class="grid-view-item__image primary blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product1.jpg' %}" src="{% static 'assets/images/product-images/home7-product1.jpg' %}" alt="image" title="product">
+                                <img class="grid-view-item__image primary blur-up lazyload" data-src="{{ product.thumbnail.url }}" src="{% static 'assets/images/product-images/home7-product1.jpg' %}" alt="image" title="product">
                                 <!-- End image -->
-                                <!-- Hover image -->
-                                <img class="grid-view-item__image hover blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product1-1.jpg' %}" src="{% static 'assets/images/product-images/home7-product1-1.jpg' %}" alt="image" title="product">
+                                <!-- Hover image -->\
+                                {% if product.thumbnail_hover %}
+                                <img class="grid-view-item__image hover blur-up lazyload" data-src="{{ product.thumbnail_hover.url }}" src="{% static 'assets/images/product-images/home7-product1-1.jpg' %}" alt="image" title="product">
+                                {% endif %}
                                 <!-- End hover image -->
                             </a>
                             <!-- end product image -->
@@ -91,13 +107,13 @@
                             <div class="product-details hoverDetails text-center mobile">
                                 <!-- product name -->
                                 <div class="product-name">
-                                    <a href="product-layout-2.html">Camoscio Zip Heel</a>
+                                    <a href="product-layout-2.html">{{ product.product_name }}</a>
                                 </div>
                                 <!-- End product name -->
                                 <!-- product price -->
                                 <div class="product-price">
-                                    <span class="old-price">$500.00</span>
-                                    <span class="price">$600.00</span>
+                                    <span class="old-price">${{ product.price }}</span>
+                                    <span class="price">${{ product.offer_price }}</span>
                                 </div>
                                 <!-- End product price -->
                                 
@@ -126,249 +142,7 @@
                             <!-- End product details -->
                         </div>
                     </div>
-                    <div class="col-12 item grid-view-item style2">
-                        <div class="grid-view_image">
-                            <!-- start product image -->
-                            <a href="product-layout-2.html" class="grid-view-item__link">
-                                <!-- image -->
-                                <img class="grid-view-item__image primary blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product2.jpg' %}" src="{% static 'assets/images/product-images/home7-product2.jpg' %}" alt="image" title="product">
-                                <!-- End image -->
-                                <!-- Hover image -->
-                                <img class="grid-view-item__image hover blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product2-1.jpg' %}" src="{% static 'assets/images/product-images/home7-product2-1.jpg' %}" alt="image" title="product">
-                                <!-- End hover image -->
-                            </a>
-                            <!-- end product image -->
-                            <!--start product details -->
-                            <div class="product-details hoverDetails text-center mobile">
-                                <!-- product name -->
-                                <div class="product-name">
-                                    <a href="product-layout-2.html">Camoscio Heel</a>
-                                </div>
-                                <!-- End product name -->
-                                <!-- product price -->
-                                <div class="product-price">
-                                    <span class="price">$748.00</span>
-                                </div>
-                                <!-- product button -->
-                                <div class="button-set">
-                                    <a href="javascript:void(0)" title="Quick View" class="quick-view-popup quick-view" data-toggle="modal" data-target="#content_quickview">
-                                        <i class="icon anm anm-search-plus-r"></i>
-                                    </a>
-                                    <!-- Start product button -->
-                                    <form class="variants add" action="#" onclick="window.location.href='cart.html'"method="post">
-                                        <button class="btn cartIcon btn-addto-cart" type="button" tabindex="0"><i class="icon anm anm-bag-l"></i></button>
-                                    </form>
-                                    <div class="wishlist-btn">
-                                        <a class="wishlist add-to-wishlist" href="wishlist.html">
-                                            <i class="icon anm anm-heart-l"></i>
-                                        </a>
-                                    </div>
-                                    <div class="compare-btn">
-                                        <a class="compare add-to-compare" href="compare.html" title="Add to Compare">
-                                            <i class="icon anm anm-random-r"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- end product button -->
-                            </div>
-                            <!-- End product details -->
-                        </div>
-                    </div>
-                    <div class="col-12 item grid-view-item style2">
-                        <div class="grid-view_image">
-                            <!-- start product image -->
-                            <a href="product-layout-2.html" class="grid-view-item__link">
-                                <!-- image -->
-                                <img class="grid-view-item__image primary blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product3.jpg' %}" src="{% static 'assets/images/product-images/home7-product3.jpg' %}" alt="image" title="product">
-                                <!-- End image -->
-                                <!-- Hover image -->
-                                <img class="grid-view-item__image hover blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product3-1.jpg' %}" src="{% static 'assets/images/product-images/home7-product3-1.jpg' %}" alt="image" title="product">
-                                <!-- End hover image -->
-                            </a>
-                            <!-- end product image -->
-                            <!--start product details -->
-                            <div class="product-details hoverDetails text-center mobile">
-                                <!-- product name -->
-                                <div class="product-name">
-                                    <a href="product-layout-2.html">Aqualina Sandal</a>
-                                </div>
-                                <!-- End product name -->
-                                <!-- product price -->
-                                <div class="product-price">
-                                    <span class="price">$471.51</span>
-                                </div>
-                                <!-- product button -->
-                                <div class="button-set">
-                                    <a href="javascript:void(0)" title="Quick View" class="quick-view-popup quick-view" data-toggle="modal" data-target="#content_quickview">
-                                        <i class="icon anm anm-search-plus-r"></i>
-                                    </a>
-                                    <!-- Start product button -->
-                                    <form class="variants add" action="#" onclick="window.location.href='cart.html'"method="post">
-                                        <button class="btn cartIcon btn-addto-cart" type="button" tabindex="0"><i class="icon anm anm-bag-l"></i></button>
-                                    </form>
-                                    <div class="wishlist-btn">
-                                        <a class="wishlist add-to-wishlist" href="wishlist.html">
-                                            <i class="icon anm anm-heart-l"></i>
-                                        </a>
-                                    </div>
-                                    <div class="compare-btn">
-                                        <a class="compare add-to-compare" href="compare.html" title="Add to Compare">
-                                            <i class="icon anm anm-random-r"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- end product button -->
-                            </div>
-                            <!-- End product details -->
-                        </div>
-                    </div>
-                    <div class="col-12 item grid-view-item style2">
-                        <div class="grid-view_image">
-                            <!-- start product image -->
-                            <a href="product-layout-2.html" class="grid-view-item__link">
-                                <!-- image -->
-                                <img class="grid-view-item__image primary blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product4.jpg' %}" src="{% static 'assets/images/product-images/home7-product4.jpg' %}" alt="image" title="product">
-                                <!-- End image -->
-                                <!-- Hover image -->
-                                <img class="grid-view-item__image hover blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product4-1.jpg' %}" src="{% static 'assets/images/product-images/home7-product4-1.jpg' %}" alt="image" title="product">
-                                <!-- End hover image -->
-                                <!-- product label -->
-                                <div class="product-labels"><span class="lbl on-sale">Sale</span></div>
-                                <!-- End product label -->
-                            </a>
-                            <!-- end product image -->
-                            <!--start product details -->
-                            <div class="product-details hoverDetails text-center mobile">
-                                <!-- product name -->
-                                <div class="product-name">
-                                    <a href="product-layout-2.html">Glove Heel</a>
-                                </div>
-                                <!-- End product name -->
-                                <!-- product price -->
-                                <div class="product-price">
-                                    <span class="price">$629.55</span>
-                                </div>
-                                <!-- product button -->
-                                <div class="button-set">
-                                    <a href="javascript:void(0)" title="Quick View" class="quick-view-popup quick-view" data-toggle="modal" data-target="#content_quickview">
-                                        <i class="icon anm anm-search-plus-r"></i>
-                                    </a>
-                                    <!-- Start product button -->
-                                    <form class="variants add" action="#" onclick="window.location.href='cart.html'"method="post">
-                                        <button class="btn cartIcon btn-addto-cart" type="button" tabindex="0"><i class="icon anm anm-bag-l"></i></button>
-                                    </form>
-                                    <div class="wishlist-btn">
-                                        <a class="wishlist add-to-wishlist" href="wishlist.html">
-                                            <i class="icon anm anm-heart-l"></i>
-                                        </a>
-                                    </div>
-                                    <div class="compare-btn">
-                                        <a class="compare add-to-compare" href="compare.html" title="Add to Compare">
-                                            <i class="icon anm anm-random-r"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- end product button -->
-                            </div>
-                            <!-- End product details -->
-                        </div>
-                    </div>
-                    <div class="col-12 item grid-view-item style2">
-                        <div class="grid-view_image">
-                            <!-- start product image -->
-                            <a href="product-layout-2.html" class="grid-view-item__link">
-                                <!-- image -->
-                                <img class="grid-view-item__image primary blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product5.jpg' %}" src="{% static 'assets/images/product-images/home7-product5.jpg' %}" alt="image" title="product">
-                                <!-- End image -->
-                                <!-- Hover image -->
-                                <img class="grid-view-item__image hover blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product5-1.jpg' %}" src="{% static 'assets/images/product-images/home7-product5-1.jpg' %}" alt="image" title="product">
-                                <!-- End hover image -->
-                            </a>
-                            <!-- end product image -->
-                            <!--start product details -->
-                            <div class="product-details hoverDetails text-center mobile">
-                                <!-- product name -->
-                                <div class="product-name">
-                                    <a href="product-layout-2.html">Aqualina Sandal</a>
-                                </div>
-                                <!-- End product name -->
-                                <!-- product price -->
-                                <div class="product-price">
-                                    <span class="price">$471.51</span>
-                                </div>
-                                <!-- product button -->
-                                <div class="button-set">
-                                    <a href="javascript:void(0)" title="Quick View" class="quick-view-popup quick-view" data-toggle="modal" data-target="#content_quickview">
-                                        <i class="icon anm anm-search-plus-r"></i>
-                                    </a>
-                                    <!-- Start product button -->
-                                    <form class="variants add" action="#" onclick="window.location.href='cart.html'"method="post">
-                                        <button class="btn cartIcon btn-addto-cart" type="button" tabindex="0"><i class="icon anm anm-bag-l"></i></button>
-                                    </form>
-                                    <div class="wishlist-btn">
-                                        <a class="wishlist add-to-wishlist" href="wishlist.html">
-                                            <i class="icon anm anm-heart-l"></i>
-                                        </a>
-                                    </div>
-                                    <div class="compare-btn">
-                                        <a class="compare add-to-compare" href="compare.html" title="Add to Compare">
-                                            <i class="icon anm anm-random-r"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- end product button -->
-                            </div>
-                            <!-- End product details -->
-                        </div>
-                    </div>
-                    <div class="col-12 item grid-view-item style2">
-                        <div class="grid-view_image">
-                            <!-- start product image -->
-                            <a href="product-layout-2.html" class="grid-view-item__link">
-                                <!-- image -->
-                                <img class="grid-view-item__image primary blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product6.jpg' %}" src="{% static 'assets/images/product-images/home7-product6.jpg' %}" alt="image" title="product">
-                                <!-- End image -->
-                                <!-- Hover image -->
-                                <img class="grid-view-item__image hover blur-up lazyload" data-src="{% static 'assets/images/product-images/home7-product6-1.jpg' %}" src="{% static 'assets/images/product-images/home7-product6-1.jpg' %}" alt="image" title="product">
-                                <!-- End hover image -->
-                            </a>
-                            <!-- end product image -->
-                            <!--start product details -->
-                            <div class="product-details hoverDetails text-center mobile">
-                                <!-- product name -->
-                                <div class="product-name">
-                                    <a href="product-layout-2.html">Avalon Sandal</a>
-                                </div>
-                                <!-- End product name -->
-                                <!-- product price -->
-                                <div class="product-price">
-                                    <span class="price">$420.00</span>
-                                </div>
-                                <!-- product button -->
-                                <div class="button-set">
-                                    <a href="javascript:void(0)" title="Quick View" class="quick-view-popup quick-view" data-toggle="modal" data-target="#content_quickview">
-                                        <i class="icon anm anm-search-plus-r"></i>
-                                    </a>
-                                    <!-- Start product button -->
-                                    <form class="variants add" action="#" onclick="window.location.href='cart.html'"method="post">
-                                        <button class="btn cartIcon btn-addto-cart" type="button" tabindex="0"><i class="icon anm anm-bag-l"></i></button>
-                                    </form>
-                                    <div class="wishlist-btn">
-                                        <a class="wishlist add-to-wishlist" href="wishlist.html">
-                                            <i class="icon anm anm-heart-l"></i>
-                                        </a>
-                                    </div>
-                                    <div class="compare-btn">
-                                        <a class="compare add-to-compare" href="compare.html" title="Add to Compare">
-                                            <i class="icon anm anm-random-r"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- end product button -->
-                            </div>
-                            <!-- End product details -->
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -381,25 +155,12 @@
             <div class="row">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12">
                     <div class="logo-bar">
-                <div class="logo-bar__item">
-                    <img src="{% static 'assets/images/logo/brandlogo1.png' %}" alt="" title="" />
-                </div>
-                <div class="logo-bar__item">
-                    <img src="{% static 'assets/images/logo/brandlogo2.png' %}" alt="" title="" />
-                </div>
-                <div class="logo-bar__item">
-                    <img src="{% static 'assets/images/logo/brandlogo3.png' %}" alt="" title="" />
-                </div>
-                <div class="logo-bar__item">
-                    <img src="{% static 'assets/images/logo/brandlogo4.png' %}" alt="" title="" />
-                </div>
-                <div class="logo-bar__item">
-                    <img src="{% static 'assets/images/logo/brandlogo5.png' %}" alt="" title="" />
-                </div>
-                <div class="logo-bar__item">
-                    <img src="{% static 'assets/images/logo/brandlogo6.png' %}" alt="" title="" />
-                </div>
-            </div>
+                    {% for brand in brands %}
+                    <div class="logo-bar__item">
+                        <img src="{{ brand.brand_image.url }}" alt="{{ brand.brand_name }}" title="{{ brand.brand_name }}" />
+                    </div>
+                    {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>

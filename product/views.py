@@ -13,6 +13,7 @@ from django.db.models.functions import Lower
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 
+
 # Create your views here.
 
 
@@ -64,8 +65,7 @@ class CreateProductView(View):
             return redirect('product:list_product')
         
         
-
-        
+    
 def edit_product(request, product_id):
     product = get_object_or_404(Products, id=product_id)
     if request.method == 'POST':
@@ -79,6 +79,10 @@ def edit_product(request, product_id):
         if request.FILES.get('thumbnail'):
             product.thumbnail = request.FILES.get('thumbnail')
         product.is_active = request.POST.get('is_active') == 'on'
+
+        if request.FILES.get('thumbnail_hover'):
+            product.thumbnail_hover = request.FILES.get('thumbnail_hover')
+    
 
         product.product_category = Category.objects.get(id=product_category_id) if product_category_id else None
         product.product_brand = Brand.objects.get(id=product_brand_id) if product_brand_id else None
@@ -219,3 +223,15 @@ def edit_variant(request, variant_id):
         return redirect('product:variant-detail', variant.product.id)
     
     return render(request, 'admindash/edit_variant.html', {'variant': variant,'variant_images': variant_images,})
+
+
+def shop_page(request):
+    products = Products.objects.all()
+    return render(request, 'user/product/shop_page.html',{'products':products})
+
+
+
+def product_details(request,pk):
+    products = Products.objects.get(id=pk)
+    
+    return render(request,'user/product/product_details.html',{'products':products})

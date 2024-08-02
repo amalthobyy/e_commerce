@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from accounts.models import User 
+from utils.decorators import admin_required
 
 
 def admin_login(request):
@@ -23,16 +24,15 @@ def admin_login(request):
     return render(request, 'admindash/admin_login.html')
 
 
-
-
+@admin_required
 def admin_home(request):
     return render(request,'admindash/admin_dash.html')
 
-
+@admin_required
 def list_user(request):
     users = User.objects.filter(is_admin=False)
     return render(request, 'admindash/list_user.html', {'users': users})
-
+@admin_required
 def user_block(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.is_blocked = True
@@ -41,7 +41,7 @@ def user_block(request, user_id):
     return redirect('admindash:list_user')
 
 
-
+@admin_required
 def user_unblock(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.is_blocked = False

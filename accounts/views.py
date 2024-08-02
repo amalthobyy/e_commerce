@@ -15,15 +15,18 @@ from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.contrib import messages
 from django.utils import timezone
+from brand.models import Brand
+from product.models import *
 
 # Create your views here.
 logger = logging.getLogger(__name__)
 User = get_user_model()
+
+
 def home(request):
-
-
-    return render (request ,'user/home.html')
-
+    brands = Brand.objects.all()
+    products = Products.objects.all()
+    return render(request, 'user/home.html',{'brands':brands,'products':products})
 
 
 def login(request):
@@ -157,3 +160,4 @@ def logout(request):
     auth_logout(request)
     messages.success(request, "You have successfully logged out.")
     return redirect('accounts:home')
+
