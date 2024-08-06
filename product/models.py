@@ -67,3 +67,4 @@ class Review(models.Model):
     def str(self):
         return f'{self.user} - {self.product}'
     
+    

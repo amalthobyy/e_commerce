@@ -26,6 +26,7 @@ urlpatterns = [
     path('admindash/',include('category.urls')),
     path('brand/',include('brand.urls')),
     path('product/',include('product.urls')),
+    path('userdash/',include('userdash.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
 ]
 if settings.DEBUG:

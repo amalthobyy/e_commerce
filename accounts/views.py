@@ -40,7 +40,7 @@ def login(request):
                 auth_login(request, user)
                 return redirect('accounts:home')
         else:
-            logger.debug(form.errors)  # Print out the form errors for debugging
+            logger.debug(form.errors)  
     
     form = Emailauthentication()
     return render(request, 'user/login.html', {'form': form})
@@ -106,7 +106,7 @@ def verify_otp(request):
                     del request.session['user_data']
                     del request.session['otp']
 
-                    return redirect('accounts:home')
+                    return redirect('accounts:login')
                 except IntegrityError:
                     messages.error(request, 'An error occurred while creating the user. Please try again.')
             else:
