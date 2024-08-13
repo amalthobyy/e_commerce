@@ -1,0 +1,163 @@
+{% extends 'admindash/base_admin.html' %} 
+{% load static %}
+{% block content %}
+<style>
+    /* Customize modal size */
+    .modal-dialog-centered.modal-custom {
+        max-width: 400px;
+    }
+
+    /* Customize cropper area within modal */
+    #imageToCrop {
+        max-width: 100%; 
+        max-height: 300px; /* Adjust the height as needed */
+        margin: auto;
+        display: block;
+    }
+
+    /* Style for image previews */
+    .image-preview {
+        max-width: 100px;
+        margin: 10px;
+        cursor: pointer;
+    }
+</style>
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">ADD IMAGE</h2>
+            </div>
+        </div>
+        <div style="width:900px;" class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Basic</h4>
+                </div>
+                <div class="container mt-5">
+                    <form id="addImagesForm" method="post" action="{% url 'product:product_images' product.id %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="images">Images (Minimum 3)</label>
+                            <input type="file" id="images" name="images" accept="image/*" multiple required class="form-control">
+                        </div>
+                        <div  class="mt-3 d-flex flex-wrap"></div> <!-- Container for displaying selected images -->
+                        <button type="submit" class="btn btn-primary mt-3">Upload Images</button>
+                    </form>
+                </div>
+            </div> <!-- card end// -->
+        </div>
+        <div class="col-lg-3">
+            <!-- Image Preview Section -->
+            <div class="container mt-4" style="width: 100%">
+                <h4 style="padding-top: 5px">Image Preview</h4>
+                <div id="imagePreview" style="width: 100%; overflow: auto; border: 1px solid #ddd; padding: 10px;"></div>
+            </div>
+            <!-- Modal for Cropping Image -->
+            <button type="button" style="display: none" id="openCropperModalBtn" data-bs-toggle="modal" data-bs-target="#cropperModal"></button>
+        </div>
+    </div>
+    <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropperModalLabel">Crop Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="imageToCrop" style="max-width: 100%;" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modal-close-btn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="cropAndSave" class="btn btn-primary">Crop and Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button type="button" id="openCropperModalBtn" data-bs-toggle="modal" data-bs-target="#cropperModal" style="display: none;"></button>
+</section> <!-- content-main end// -->
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.js"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const imageInput = document.getElementById("images");
+        const imagePreview = document.getElementById("imagePreview");
+        const openCropperModalBtn = document.getElementById("openCropperModalBtn");
+        const imageToCrop = document.getElementById("imageToCrop");
+        const cropAndSave = document.getElementById("cropAndSave");
+        const cropperModalElement = document.getElementById("cropperModal");
+
+        let cropper; // Holds the Cropper.js instance
+        let currentImage; // Reference to the currently clicked image
+
+        // Handle image preview
+        imageInput.addEventListener("change", (event) => {
+            const files = event.target.files;
+            imagePreview.innerHTML = ""; // Clear previous previews
+
+            Array.from(files).forEach((file) => {
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.style.maxWidth = "100px"; // Limit size for preview
+                    img.style.margin = "10px";
+                    img.className = "image-preview";
+
+                    img.addEventListener("click", () => {
+                        imageToCrop.src = img.src;
+                        currentImage = img;
+                        openCropperModalBtn.click();
+                    });
+
+                    imagePreview.appendChild(img);
+                };
+
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Initialize Cropper.js when the modal is shown
+        cropperModalElement.addEventListener("shown.bs.modal", () => {
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(imageToCrop, {
+                aspectRatio: 1,
+                viewMode: 1,
+                responsive: true,
+                guides: true,
+                center: true,
+                highlight: false,
+                background: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: true
+            });
+        });
+
+        // Handle cropping and saving the image
+        cropAndSave.addEventListener("click", () => {
+            if (cropper) {
+                const canvas = cropper.getCroppedCanvas();
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    currentImage.src = url;
+                    const modalCloseBtn = document.getElementById('modal-close-btn');
+                    modalCloseBtn.click();
+                }, 'image/jpeg');
+            }
+        });
+    });
+</script>
+{% endblock %}

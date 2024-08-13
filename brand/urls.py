@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import list_brand, create_brand, EditBrand, DeleteBrandView
+from .views import *
 
 app_name = 'brand'
 

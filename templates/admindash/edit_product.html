@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="mb-4">Edit Product</h1>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" action="{% url 'product:edit-product' product.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
             <label for="product_name" class="form-label">Product Name</label>
@@ -18,7 +18,6 @@
         <div class="mb-3">
             <label for="product_category" class="form-label">Category</label>
             <select class="form-select" id="product_category" name="product_category">
-                <option value="">{{ product.product_category }}</option>
                 {% for category in categories %}
                     <option value="{{ category.id }}">{{ category.category_name }}</option>
                 {% endfor %}
@@ -27,7 +26,6 @@
         <div class="mb-3">
             <label for="product_brand" class="form-label">Brand</label>
             <select class="form-select" id="product_brand" name="product_brand">
-                <option value="">{{ product.product_brand.brand_name }}</option>
                 {% for brand in brands %}
                     <option value="{{ brand.id }}">{{ brand.brand_name }}</option>
                 {% endfor %}

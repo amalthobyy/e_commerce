@@ -7,8 +7,8 @@
     	<!--Collection Banner-->
     	<div class="collection-header">
 			<div class="collection-hero">
-        		<div class="collection-hero__image"><img class="blur-up lazyload" data-src="{% static 'assets/images/cat-women.jpg' %}" src="{% static 'assets/images/cat-women.jpg' %}" alt="Women" title="Women" /></div>
-        		<div class="collection-hero__title-wrapper"><h1 class="collection-hero__title page-width">Shop Your DRIP !</h1></div>
+        		<div class="collection-hero__image"><img class="blur-up lazyload" data-src="{% static 'assets/images/drip/girl.gif' %}"  alt="Women" title="Women" /></div>
+        		<div class="collection-hero__title-wrapper"><h1 class="collection-hero__title page-width" style="font-family: Arial, sans-serif; font-weight: bold; font-size: 3em;" >Shop Your DRIP </h1></div>
       		</div>
 		</div>
         <!--End Collection Banner-->
@@ -21,17 +21,14 @@
                 	<div class="sidebar_tags">
                     	<!--Categories-->
                     	<div class="sidebar_widget categories filter-widget">
-                            <div class="widget-title"><h2>Categories</h2></div>
+                            <div class="widget-title mt-5"><h2>Categories</h2></div>
                             <div class="widget-content">
                                 <ul class="sidebar_categories">
-                                    {% comment %} <li class="level1 sub-level"><a href="#;" class="site-nav">Shoes</a>
-                                    	
-                                    </li> {% endcomment %}
-                                    <li class="lvl-1"><a href="#;" class="site-nav">Sneakers</a></li>
-                                    <li class="lvl-1"><a href="#;" class="site-nav">Formal</a></li>
-                                    <li class="lvl-1"><a href="#;" class="site-nav">Sports</a></li>
-                                    <li class="lvl-1"><a href="#;" class="site-nav">Casuls</a></li>
-                                   
+                                     {% for category in categories %}
+                                     <li>
+                                      <label for="check1"><span><span></span></span>{{ category.category_name}}</label>
+                                    </li>
+                                   {% endfor %}
                                 </ul>
                             </div>
                         </div>
@@ -68,35 +65,15 @@
                         <div class="sidebar_widget filterBox filter-widget">
                             <div class="widget-title"><h2>Brands</h2></div>
                             <ul>
+                              {% for brand in brands %}
                                 <li>
-                                  <input type="checkbox" value="allen-vela" id="check1">
-                                  <label for="check1"><span><span></span></span>Nike</label>
+                                  <li>
+                                    <label for="check1"><span><span></span></span>{{ brand.brand_name}}</label>
+                                  </li>
                                 </li>
-                                <li>
-                                  <input type="checkbox" value="oxymat" id="check3">
-                                  <label for="check3"><span><span></span></span>Jordan</label>
-                                </li>
+                                {% endfor %}
                                 
-                                <li>
-                                  <input type="checkbox" value="pagini" id="check5">
-                                  <label for="check5"><span><span></span></span>Louis Vuitton</label>
-                                </li>
-                                <li>
-                                  <input type="checkbox" value="monark" id="check6">
-                                  <label for="check6"><span><span></span></span>Puma</label>
-                                </li>
-                                <li>
-                                  <input type="checkbox" value="monark" id="check6">
-                                  <label for="check6"><span><span></span></span>Adidas</label>
-                                </li>
-                                <li>
-                                  <input type="checkbox" value="monark" id="check6">
-                                  <label for="check6"><span><span></span></span>Crocs</label>
-                                </li>
-                                <li>
-                                  <input type="checkbox" value="monark" id="check6">
-                                  <label for="check6"><span><span></span></span>Gucci</label>
-                                </li>
+                  
                             </ul>
                         </div>
                         <!--End Brand-->
@@ -197,6 +174,7 @@
                         </div>
                         <!--end Product Tags-->
                     </div>
+
                 </div>
                 <!--End Sidebar-->
                 <!--Main Content-->
@@ -226,25 +204,28 @@
                                     <div class="col-4 col-md-4 col-lg-4 text-right">
                                     	<div class="filters-toolbar__item">
                                       		<label for="SortBy" class="hidden">Sort</label>
-                                      		<select name="SortBy" id="SortBy" class="filters-toolbar__input filters-toolbar__input--sort">
-                                                <option value="title-ascending" selected="selected">Sort</option>
-                                                <option>Best Selling</option>
-                                                <option>Alphabetically, A-Z</option>
-                                                <option>Alphabetically, Z-A</option>
-                                                <option>Price, low to high</option>
-                                                <option>Price, high to low</option>
-                                                <option>Date, new to old</option>
-                                                <option>Date, old to new</option>
-                                      		</select>
-                                      		<input class="collection-header__default-sort" type="hidden" value="manual">
+                                          <form method="get" action="{% url 'product:shop-page' %}">
+                                            <select name="SortBy" id="SortBy" onchange="this.form.submit()">
+                                                <option value="title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>Sort</option>
+                                                <option value="best-selling" {% if sort_by == 'best-selling' %}selected{% endif %}>Best Selling</option>
+                                                <option value="title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>Alphabetically, A-Z</option>
+                                                <option value="title-descending" {% if sort_by == 'title-descending' %}selected{% endif %}>Alphabetically, Z-A</option>
+                                                <option value="price-low-to-high" {% if sort_by == 'price-low-to-high' %}selected{% endif %}>Price, low to high</option>
+                                                <option value="price-high-to-low" {% if sort_by == 'price-high-to-low' %}selected{% endif %}>Price, high to low</option>
+                                                <option value="average-ratings" {% if sort_by == 'average-ratings' %}selected{% endif %}>Average ratings</option>
+                                                <option value="popularity" {% if sort_by == 'popularity' %}selected{% endif %}>Popularity</option>
+                                            </select>
+                                            <noscript><button type="submit">Sort</button></noscript>
+                                        </form>
                                         </div>
+                                        
                                     </div>
 
                                 </div>
                             </div>
                         </div>
                         <!--End Toolbar-->
-                        <div class="grid-products grid--view-items">
+                        <div class="grid-products grid--view-items" id="productContainer">
                             <div class="row">
                                 {% for product in products %} 
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-4 item">
@@ -310,16 +291,8 @@
                                             <i class="font-13 fa fa-star-o"></i>
                                             <i class="font-13 fa fa-star-o"></i>
                                         </div>
-                                        <!-- Variant -->
-                                        {% comment %} <ul class="swatches">
-                                            <li class="swatch medium rounded"><img src="{% static 'assets/images/product-images/variant1.jpg' %}" alt="image" /></li>
-                                            <li class="swatch medium rounded"><img src="{% static 'assets/images/product-images/variant2.jpg' %}" alt="image" /></li>
-                                            <li class="swatch medium rounded"><img src="{% static 'assets/images/product-images/variant3.jpg' %}" alt="image" /></li>
-                                            <li class="swatch medium rounded"><img src="{% static 'assets/images/product-images/variant4.jpg' %}" alt="image" /></li>
-                                            <li class="swatch medium rounded"><img src="{% static 'assets/images/product-images/variant5.jpg' %}" alt="image" /></li>
-                                            <li class="swatch medium rounded"><img src="{% static 'assets/images/product-images/variant6.jpg' %}" alt="image" /></li>
-                                        </ul> {% endcomment %}
-                                        <!-- End Variant -->
+                                  
+                                       
                                     </div>
                                     <!-- End product details -->
                                 </div>
@@ -465,21 +438,4 @@
         </div>
     </div>
     <!--End Quick View popup-->
-    
-     <!-- Including Jquery -->
-     <script src="{% static 'assets/js/vendor/jquery-3.3.1.min.js' %}"></script>
-     <script src="{% static 'assets/js/vendor/jquery.cookie.js' %}"></script>
-     <script src="{% static 'assets/js/vendor/modernizr-3.6.0.min.js' %}"></script>
-     <script src="{% static 'assets/js/vendor/wow.min.js' %}"></script>
-     <!-- Including Javascript -->
-     <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
-     <script src="{% static 'assets/js/plugins.js' %}"></script>
-     <script src="{% static 'assets/js/popper.min.js' %}"></script>
-     <script src="{% static 'assets/js/lazysizes.js' %}"></script>
-     <script src="{% static 'assets/js/main.js' %}"></script>
-</div>
-</body>
-
-<!-- belle/shop-grid-3.html   11 Nov 2019 12:39:06 GMT -->
-</html>
-{% endblock %}
+{% endblock %}     

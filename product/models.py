@@ -30,14 +30,13 @@ class Products(models.Model):
     def __str__(self):
         return f"{self.product_brand.brand_name}-{self.product_name}"
     
+    
 class Product_Variant(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
     size =models.CharField(max_length=10,null=True)
-    colour_name = models.CharField(null=False)
     variant_stock = models.PositiveIntegerField(null=False,default=0)
     variant_status = models.BooleanField(default=True)
-    colour_code = models.CharField(null=False)
-
+    
 
 
 class product_image(models.Model):
@@ -48,13 +47,6 @@ class product_image(models.Model):
         return f"Image for {self.product.product_name}"
 
 
-class Product_variant_images(models.Model):
-    product_variant = models.ForeignKey(Product_Variant, on_delete=models.CASCADE)
-    images = models.ImageField(
-        upload_to="product_images")
-
-    def __str__(self):
-        return f"Image for {self.product_variant.product.product_name} - {self.product_variant.colour_name}"
     
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

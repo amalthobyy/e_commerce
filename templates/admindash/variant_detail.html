@@ -33,21 +33,25 @@
             <div class="row">
                 <!-- Display images for this variant -->
                 <div class="col-md-4">
-                    <h6>Images for {{ variant.product.product_name }} - {{ variant.colour_name }}</h6>
+                    <h6>Images for</h6>
                     <div class="d-flex flex-wrap">
-                        {% for image in variant.product_variant_images_set.all %}
+                        {% if product.thumbnail %}
                         <div class="p-2">
-                            <img src="{{ image.images.url }}" class="img-fluid img-thumbnail" alt="Variant Image" width="100">
+                            <img src="{{ product.thumbnail.url }}" class="img-fluid img-thumbnail" alt="Variant Image" width="100">
                         </div>
-                        {% empty %}
+                        {% else %}
                         <p>No images available for this variant</p>
-                        {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
                 <!-- Display details for this variant -->
                 <div class="col-md-8">
                     <table class="table table-bordered">
                         <tbody>
+                            <tr>
+                                <th>Size</th>
+                                <td>{{ variant.size }}</td>
+                            </tr>
                             <tr>
                                 <th>Stock</th>
                                 <td>{{ variant.variant_stock }}</td>
@@ -56,10 +60,7 @@
                                 <th>Status</th>
                                 <td>{% if variant.variant_status %}Active{% else %}Inactive{% endif %}</td>
                             </tr>
-                            <tr>
-                                <th>Colour Code</th>
-                                <td>{{ variant.colour_code }}</td>
-                            </tr>
+                           
                         </tbody>
                     </table>
                 </div>

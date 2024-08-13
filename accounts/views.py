@@ -38,12 +38,14 @@ def login(request):
             logger.debug(f"Authenticated User: {user}")
             if user and user.is_active and not user.is_blocked:
                 auth_login(request, user)
+                messages.success(request,'successfully loggedin')
                 return redirect('accounts:home')
         else:
             logger.debug(form.errors)  
     
     form = Emailauthentication()
     return render(request, 'user/login.html', {'form': form})
+
 
 
 def signup(request):

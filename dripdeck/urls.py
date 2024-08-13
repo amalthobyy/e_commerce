@@ -23,10 +23,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('accounts.urls')),
     path('admindash/',include('admindash.urls')),
-    path('admindash/',include('category.urls')),
+    path('category/',include('category.urls')),
     path('brand/',include('brand.urls')),
     path('product/',include('product.urls')),
     path('userdash/',include('userdash.urls')),
+    path('cart/',include('cart.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
 ]
 if settings.DEBUG:

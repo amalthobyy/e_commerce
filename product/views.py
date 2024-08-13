@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.views import View
-from .models import Products, Category, Brand ,product_image ,Product_Variant,Product_variant_images, product_image 
+from .models import Products, Category, Brand ,product_image ,Product_Variant, product_image 
 from django.http import HttpResponse
 from django.utils import timezone
 from django.http import JsonResponse
@@ -60,7 +60,6 @@ class CreateProductView(View):
             thumbnail=thumbnail,
             is_active=is_active,
             )
-            product.save()
 
             return redirect('product:list_product')
         
@@ -70,17 +69,19 @@ def edit_product(request, product_id):
     product = get_object_or_404(Products, id=product_id)
     categories = Category.objects.all()
     brands = Brand.objects.all()
+
     if request.method == 'POST':
+        product = get_object_or_404(Products, id=product_id)
         product.product_name = request.POST.get('product_name')
         product.product_description = request.POST.get('product_description')
         product_category_id = request.POST.get('product_category')
         product_brand_id = request.POST.get('product_brand')
         product.price = request.POST.get('price')
         product.offer_price = request.POST.get('offer_price')
+        product.is_active = request.POST.get('is_active') == "on"
 
         if request.FILES.get('thumbnail'):
             product.thumbnail = request.FILES.get('thumbnail')
-        product.is_active = request.POST.get('is_active') == 'on'
 
         if request.FILES.get('thumbnail_hover'):
             product.thumbnail_hover = request.FILES.get('thumbnail_hover')
@@ -89,12 +90,9 @@ def edit_product(request, product_id):
         product.product_category = Category.objects.get(id=product_category_id) if product_category_id else None
         product.product_brand = Brand.objects.get(id=product_brand_id) if product_brand_id else None
 
-        product.updated_at = timezone.now()  # Update the updated_at timestamp
         product.save()
         return redirect('product:product-detail', product_id=product_id)
 
-    categories = Category.objects.all()
-    brands = Brand.objects.all()
     return render(request, 'admindash/edit_product.html', {'product': product, 'categories': categories, 'brands': brands})
 
 
@@ -131,63 +129,39 @@ def add_variant(request, product_id):
     
     if request.method == 'POST':
         size = request.POST.get('size')
-        colour_name = request.POST.get('colour_name')
         variant_stock = request.POST.get('variant_stock')
         variant_status = request.POST.get('variant_status') == 'on'
-        colour_code = request.POST.get('colour_code')
+        
+        if Product_Variant.objects.filter(product=product, size=size).exists():
+            messages.error(request, 'A variant with this size already exists for this product.')
+            return render(request, 'admindash/add_variant.html', {'product': product})
 
-        if Product_Variant.objects.filter(product=product, colour_name=colour_name, colour_code=colour_code).exists():
-            messages.error(request, "A variant with this color name and color code already exists.")
-            return redirect('product:add-variant', product_id=product_id)
+       
         
         variant = Product_Variant.objects.create(
             product=product,
             size=size,
-            colour_name=colour_name,
+           
             variant_stock=variant_stock,
             variant_status=variant_status,
-            colour_code=colour_code
+           
         )
 
-        return redirect('product:add-variant-image', product_variant_id=variant.id)  
+        return redirect('product:variant-detail', product_id=product.id)  
 
-    return render(request, 'admindash/add_variant.html', {'product': product, 'variants': variants})
-
-
-def add_variant_image(request, product_variant_id):
-    product_variant = get_object_or_404(Product_Variant, id=product_variant_id)
-    
-    if request.method == 'POST':
-        images = request.FILES.getlist('images')
-        
-        if images:
-            for image in images:
-                Product_variant_images.objects.create(product_variant=product_variant, images=image)
-            return redirect('product:variant-detail', product_id=product_variant.product.id)
-        
-        return HttpResponse("Invalid data", status=400)
-
-    return render(request, 'admindash/add_variant_image.html', {'product_variant': product_variant})
+    return render(request, 'admindash/add_variant.html', {'product': product,})
 
 
-def delete_image(request, image_id):
-    if request.method == 'DELETE':
-        print('hlo')
-        try:
-            image = Product_variant_images.objects.get(id=image_id)
-            image.delete()
-            return JsonResponse({'success': True})
-        except Product_variant_images.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Image not found'}, status=404)
-    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
+   
+
+
 
 
 def variant_detail(request, product_id):
     product = get_object_or_404(Products, id=product_id)
     
     
-    variants = Product_Variant.objects.filter(product=product).prefetch_related('product_variant_images_set')
-    
+    variants = Product_Variant.objects.filter(product=product)
     context = {
         'product': product,
         'variants': variants,
@@ -206,39 +180,87 @@ def variant_status(request, variant_id):
 
 def edit_variant(request, variant_id):
     variant = get_object_or_404(Product_Variant, id=variant_id)
-    variant_images = Product_variant_images.objects.filter(product_variant=variant)
-    
+   
     if request.method == 'POST':
+        variant = get_object_or_404(Product_Variant, id=variant_id)
+        
         variant.size = request.POST.get('variant_size')
-        variant.colour_name = request.POST.get('colour_name')
-        variant.colour_code = request.POST.get('colour_code')
         variant.variant_stock = request.POST.get('variant_stock')
         variant.variant_status = request.POST.get('variant_status') == 'on'
 
-        if request.FILES.get('images'):
-            Product_variant_images.objects.create(
-                product_variant=variant,
-                images=request.FILES.get('images')
-            )
-        
+      
         variant.save()
         return redirect('product:variant-detail', variant.product.id)
     
-    return render(request, 'admindash/edit_variant.html', {'variant': variant,'variant_images': variant_images,})
+    return render(request, 'admindash/edit_variant.html', {'variant': variant})
+
+def product_images(request,pk):
+    if request.method =="POST":
+        product=Products.objects.get(id=pk)
+        images=request.FILES.getlist('images')
+
+        for image in images:
+            product_image.objects.create(product=product,images=image)
+        
+        return redirect('product:product-detail',product_id = product.id)
+    product = get_object_or_404(Products, id=pk)
+    return render(request, 'admindash/add_productimg.html',{'product':product})
 
 
+def remove(request,pk):
+    image=product_image.objects.get(id=pk)
+    image.delete()
+    pk=image.product.id
+    return redirect('product:product-detail',product_id=pk)
+
+
+
+#----------userside--------------
 def shop_page(request):
-    products = Products.objects.all()
-    return render(request, 'user/product/shop_page.html',{'products':products})
+    sort_by = request.GET.get('SortBy')
+
+    sort_options = {
+        'title-ascending': 'product_name',
+        'title-descending': '-product_name',
+        'price-low-to-high': 'price',
+        'price-high-to-low': '-price',
+        'best-selling': '-sales',  # ensure you have a 'sales' field
+        'average-ratings': '-average_rating',  # ensure you have an 'average_rating' field
+        'popularity': '-popularity'  # ensure you have a 'popularity' field
+    }
+
+    if sort_by in sort_options:
+        sort_field = sort_options[sort_by]
+        products = Products.objects.all().order_by(sort_field)
+    else:
+        products = Products.objects.all()
+
+    categories = Category.objects.all()
+    brands = Brand.objects.all()
+    return render(request, 'user/product/shop_page.html',{'products':products, 'categories':categories, 'brands':brands})
 
 
 
 def product_details(request,pk):
+    
     products = Products.objects.get(id=pk)
     variants = Product_Variant.objects.filter(product=products)
-    images = []
-    for variant in variants:
-        variant_images = Product_variant_images.objects.filter(product_variant=variant)
-        images.extend(variant_images)
-    
-    return render(request,'user/product/product_details.html',{'products':products,'images':images,'variant':variant})
+    reviews = Review.objects.filter(product= products)
+    images = product_image.objects.filter(product=products)
+    return render(request,'user/product/product_details.html',{'products':products,'reviews':reviews,'images':images,'variants':variants})
+
+def product_reviews(request):
+
+    return render(request,'user/product/product_details.html')
+
+
+def review(request,pk):
+    product = get_object_or_404(Products, id=pk)
+    pk=product.id
+    if request.method=="POST":
+        rating=request.POST.get('rating')
+        review=request.POST.get('review')
+
+        Review.objects.create(user=request.user,product=product,rating=rating,comment=review)
+
+    return redirect('product:product-detailsuser',pk=pk)

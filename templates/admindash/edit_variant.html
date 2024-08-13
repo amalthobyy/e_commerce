@@ -23,14 +23,6 @@
                     <input type="text" class="form-control" id="variant_size" name="variant_size" value="{{ variant.size }}">
                 </div>
                 <div class="form-group">
-                    <label for="colour_name">Colour Name</label>
-                    <input type="text" class="form-control" id="colour_name" name="colour_name" value="{{ variant.colour_name }}">
-                </div>
-                <div class="form-group">
-                    <label for="colour_code">Colour Code</label>
-                    <input type="text" class="form-control" id="colour_code" name="colour_code" value="{{ variant.colour_code }}">
-                </div>
-                <div class="form-group">
                     <label for="variant_stock">Stock</label>
                     <input type="number" class="form-control" id="variant_stock" name="variant_stock" value="{{ variant.variant_stock }}">
                 </div>
@@ -39,28 +31,9 @@
                     <label class="form-check-label" for="variant_status">Active</label>
                 </div>
                 
-                {% if variant_images %}
-                <div class="mt-4">
-                    <h5>Current Images</h5>
-                    <div class="row">
-                        {% for image in variant_images %}
-                        <div class="col-md-3 mb-3">
-                            <img src="{{ image.images.url }}" class="img-fluid img-thumbnail" alt="Variant Image">
-                            <button type="button" class="btn btn-danger mt-2" onclick="deleteImage({{ image.id }})">Delete</button>
-                        </div>
-                        {% empty %}
-                        <p>No images available for this variant</p>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
+               
 
-                <div class="form-group mt-3">
-                    <label for="images">Select Images</label>
-                    <input type="file" class="form-control" id="images" name="images" accept="image/*">
-                    <small class="form-text text-muted">Please upload valid image files.</small>
-                </div>
-
+               
                 <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
                 <a href="{% url 'product:variant-detail' variant.product.id %}"><button type="button" class="btn btn-secondary mt-3">Cancel</button></a>
             </form>
@@ -69,10 +42,6 @@
 </div>
 
 <!-- Image Preview Section -->
-<div class="container mt-4" style="width: 100%">
-    <h4 style="padding-top: 5px">Image Preview</h4>
-    <div id="imagePreview" style="width: 100%; overflow: auto; border: 1px solid #ddd; padding: 10px;"></div>
-</div>
 
 <!-- Modal for Cropping Image -->
 <button type="button" style="display: none" id="openCropperModalBtn" data-bs-toggle="modal" data-bs-target="#cropperModal"></button>
@@ -273,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "{% url 'product:delete-image' 0 %}".replace('0', imageId),
+                    url: "".replace('0', imageId),
                     type: 'DELETE',
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}'

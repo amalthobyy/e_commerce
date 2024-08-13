@@ -1,3 +1,4 @@
+
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
@@ -5,10 +6,10 @@ from django.contrib.auth.decorators import login_required
 from .models import *
 # Create your views here.
 
-
+@login_required(login_url='/login/')
 def user_profile(request):
-    
-    return render(request, 'user_dash/demo.html')
+    user_address = UserAddress.objects.filter(user=request.user,is_deleted=False).order_by('-status')
+    return render(request, 'user_dash/demo.html',{ 'user_address': user_address })
 
 
 def add_address(request):
@@ -52,3 +53,49 @@ def add_address(request):
         return redirect('userdash:add-address')
 
     return render(request, 'user_dash/demo.html', context)
+
+def changepass(request):
+    if request.method =='POST':
+        user = User.objects.get(id=request.user.id)
+        old_password = request.POST.get('old_password')
+        new_password=request.POST.get('new_password')
+        confirm_password=request.POST.get('confirm_password')
+        if user.check_password(old_password):
+             
+            if new_password == confirm_password and new_password != old_password:
+                user.set_password(new_password) 
+                user.save()
+                messages.success(request, 'Password Changed Successfully')
+
+
+    return render(request, 'user_dash/demo.html')
+
+
+def edituser(request):
+    if request.method=="POST":
+        user = User.objects.get(id=request.user.id)
+        print(user)
+        user.first_name=request.POST.get('firstname')
+        user.last_name=request.POST.get('lastname')
+        user.email=request.POST.get('email')
+        user.save()
+
+    return render(request,'user_dash/demo.html')
+
+
+def default(request,pk):
+        address= UserAddress.objects.get(id=pk,user=request.user)
+        default = UserAddress.objects.filter(user=request.user, status=True).update(status=False)
+        address.status = True
+        address.save()
+
+        return redirect('userdash:user-profile')  
+
+
+def delete(request,pk):
+    address= UserAddress.objects.get(id=pk,user=request.user)
+    address.is_deleted=True
+    address.save()
+    return redirect('userdash:user-profile')
+   
+        

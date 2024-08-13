@@ -15,9 +15,9 @@
         <div class="row g-0">
             <div class="col-md-1">
                 <div class="thumbnail-list">
-                    {% for image in images %}
+                    {% comment %} {% for image in images %}
                     <img src="{{ image.images.url }}" class="img-fluid img-thumbnail thumbnail-image" alt="Product Image" onclick="swapImage(this)">
-                    {% endfor %}
+                    {% endfor %} {% endcomment %}
                 </div>
             </div>
             <div class="col-md-4">
@@ -76,6 +76,9 @@
                         <a href="{% url 'product:edit-product' products.id %}" class="btn btn-warning me-2">Edit</a>
                         {% comment %} <a href="{% url 'product:add-images' products.id %}" class="btn btn-info me-2">Add Images</a> {% endcomment %}
                         <a href="{% url 'product:variant-detail' products.id %}" class="btn btn-secondary me-2">Variant</a>
+                        
+                        <a href="{% url 'product:product_images' products.id %}" class="btn btn-secondary me-2">Add image</a>
+                        
                         <a href="{% url 'product:list_product' %}" class="btn btn-secondary me-2">Back</a>
                     </div>
                 </div>
@@ -84,6 +87,17 @@
     </div>
 
 </section>
+<h5>products Images</h5>
+        <div class="d-flex flex-wrap">
+            {% for image in images %}
+                <div class="card me-2 mb-2" style="width: 18rem;">
+                    <div class="card-body">
+                        <img src="{{ image.images.url }}" class="img-thumbnail" alt="products Image">
+                        <a href="{% url 'product:remove_images' image.id %}" class="btn btn-danger me-2">Remove</a> 
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
