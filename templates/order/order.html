@@ -1,0 +1,50 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4" style="font-weight:bold;">Order Completed</h1>
+    {% comment %} <h3 class="mb-4" style="font-weight:bold;">Order ID:{{ order_id }}</h3> {% endcomment %}
+    <h3 class="text-success" style="font-weight:bold;">{{ formatted_future_date }}</h3>
+    
+    <div class="text-center mb-4">
+        <div class="text-success display-1" style="font-weight:bold;">✓</div>
+        <h1 style="font-weight:bold;">Your order is Completed</h1>
+        <p style="font-weight:bold; padding-bottom:20px;">Thank You for your order. Sit tight we are processing your order<br>we will update you with your order in email</p>
+        <button class="btn btn-dark" style="font-weight:bold;"><a href="{% url 'accounts:home' %}" style="color:white;">Continue Shopping</a></button>
+        <button class="btn btn-dark" style="font-weight:bold;"><a href="{% url 'userdash:user-profile' %}" style="color:white;">View order</a></button>
+    </div>
+    
+    <div class="mb-3">
+        <p class="mb-1" style="font-weight:bold;"><strong>Order date:</strong>{{ date }}</p>
+        <p style="font-weight:bold;"><strong>Order status:</strong> {{ order_status }}</p>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> 
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+{% if messages %}
+    const messages = [
+        {% for message in messages %}
+            "{{ message }}",
+        {% endfor %}
+    ];
+    messages.forEach(message => {
+        Swal.fire({
+            toast: true,
+            position: 'top-right',
+            icon: 'success',
+            title: message,
+            showConfirmButton: false,
+            timer: 3000
+        });
+    });
+{% endif %}
+});
+</script>
+{% endblock %}  
+   

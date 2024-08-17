@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'brand',
     'userdash',
     'cart',
+    'order',
     'social_django',
     
    

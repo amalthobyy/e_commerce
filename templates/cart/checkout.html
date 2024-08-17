@@ -1,0 +1,218 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .black-hover-button {
+        background-color: transparent !important;
+        color: black !important;
+      }
+      .black-hover-button:hover {
+        background-color: black;
+        color: white !important;
+      }
+    
+      .black-hover-button:focus {
+        background-color: black !important;
+        color: white !important;
+      }
+    
+      .black-hover-button input[type="checkbox"]:checked {
+        background-color: black;
+        color: white !important;
+      }
+  </style>
+  <main class="main">
+      <div class="page-header breadcrumb-wrap">
+          <div class="container">
+              <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+                  <span></span> Shop <span></span> Checkout
+              </div>
+          </div>
+    </div>
+    <section class="mt-20 mb-50">
+        <div class="container">
+            <div class="row">
+            <div class="col-md-6">
+            <div class="mb-25">
+              <h4>Billing Details</h4>
+            </div>
+            <div class="mb-25">
+              <button class="btn btn-fill-out btn-block hover-up" 
+        style="background:black; color:white; width:100%;"
+        onclick="window.location.href='{% url 'userdash:add-addresstwo' %}'">
+             Add New Address
+            </button>
+            </div>
+            <div>
+              <div class="row">
+                <div class="col-lg-6" style="width: 700px">
+                  
+                    <div class="card mb-3 mb-lg-0">
+                        {% for address in user_address %}
+                                    <button
+                                        class="btn btn-secondary dropdown-toggle"
+                                        type="button"
+                                        id="dropdownMenuButton{{ address.id }}"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <input
+                                            type="checkbox"
+                                            class="form-check-input me-2 address-checkbox"
+                                            id="{{ address.id }}"
+                                            data-address-id="{{ address.id }}"
+                                            {% if address.status %}checked{% endif %} >
+                                        {{ address.name }}
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ address.id }}">
+                                        <li>
+                                            <p class="dropdown-item">
+                                                <strong>House Name:</strong> {{ address.house_name }}
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <p class="dropdown-item">
+                                                <strong>Street Name:</strong> {{ address.street_name }}
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <p class="dropdown-item">
+                                                <strong>Pin Number:</strong> {{ address.pin_number }}
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <p class="dropdown-item">
+                                                <strong>District:</strong> {{ address.district }}
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <p class="dropdown-item">
+                                                <strong>State:</strong> {{ address.state }}
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <p class="dropdown-item">
+                                                <strong>Country:</strong> {{ address.country }}
+                                            </p>
+                                        </li>
+                                    </ul>
+                    {% empty %}
+                        <p>No addresses found.</p>
+                    {% endfor %}
+                  </div>
+                </div>
+                <br />
+              </div>
+            </div>
+          </div>
+          <!-- Your Orders Section -->
+          <div class="col-md-6">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h4 class="card-title mb-4">Your Orders</h4>
+                <div class="order-items">
+                  {% for item in cart_items %}
+                  <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                    <img
+                      src="{{ item.variant.product.thumbnail.url }}"
+                      alt="{{ item.product.product_name }}"
+                      class="img-fluid rounded me-3"
+                      style="width: 60px; height: 60px; object-fit: cover" />
+                    <div class="flex-grow-1">
+                      <h6 class="mb-0">{{ item.product.product_name }}</h6>
+                      <small class="text-muted"
+                        >Quantity: {{ item.quantity }}</small
+                      >
+                    </div>
+                    <div class="text-end">
+                      <span class="fw-bold">₹{{ item.sub_total }}</span>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                <div class="order-summary mt-4">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal</span>
+                    <span>₹{{ cart_total }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping</span>
+                    <span class="text-success">Free</span>
+                  </div>
+                  {% comment %} <div class="d-flex justify-content-between mb-2">
+                    <span>Coupon Applied</span>
+                    <span class="text-danger">{{ coupon_name }}</span>
+                  </div> {% endcomment %}
+                  {% comment %} <div class="d-flex justify-content-between mb-2">
+                    <span>Discount</span>
+                    <span class="text-danger">{{ discount }}-</span>
+                  </div> {% endcomment %}
+                  <div
+                    class="d-flex justify-content-between fw-bold mt-3 pt-3 border-top">
+                    <span>Total</span>
+                    <span>₹{{ cart_total }}</span>
+                  </div>
+                </div>
+  
+                <hr class="my-4" />
+                <form method="post" action="{% url 'order:place_order' %}">
+                  {% csrf_token %}
+                  <h5 class="mb-3">Payment Method</h5>
+                  <div class="mb-3">
+                      <div class="form-check mb-2">
+                          <input class="form-check-input" type="radio" name="payment_option" value="Cash On Delivery" id="Cash On Delivery" checked />
+                          <label class="form-check-label" for="Cash On Delivery">Cash On Delivery</label>
+                      </div>
+                      {% comment %} <div class="form-check mb-2">
+                          <input class="form-check-input" type="radio" name="payment_option" value="Wallet" id="Wallet" />
+                          <label class="form-check-label" for="Wallet">Wallet ( ₹{{ cart_total }} )</label>
+                      </div> {% endcomment %}
+                      {% comment %} <div class="form-check">
+                          <input class="form-check-input" type="radio" name="payment_option" value="Online Payment" id="Online Payment" />
+                          <label class="form-check-label" for="Online Payment">Online Payment</label>
+                      </div> {% endcomment %}
+                  </div>
+                  <button type="submit" class="btn btn-outline-dark w-100 mt-3">Place Order</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      {% if messages %}
+          const messages = [
+              {% for message in messages %}
+                  "{{ message }}",
+              {% endfor %}
+          ];
+          messages.forEach(message => {
+              Swal.fire({
+                  toast: true,
+                  position: 'top-right',
+                  icon: 'error',
+                  title: message,
+                  showConfirmButton: false,
+                  timer: 3000
+              });
+          });
+      {% endif %}
+  });
+  document.addEventListener('DOMContentLoaded', function () {
+    var dropdowns = document.querySelectorAll('.dropdown-toggle');
+    dropdowns.forEach(function (dropdown) {
+        new bootstrap.Dropdown(dropdown);
+    });
+});
+
+  </script>
+  {% endblock %}  

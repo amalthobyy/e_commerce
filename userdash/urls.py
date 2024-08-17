@@ -10,5 +10,8 @@ urlpatterns = [
     path('changepass/',views.changepass,name='changepass'),
     path('edituser/',views.edituser,name='edituser'),
     path('default/<int:pk>/',views.default,name='default'),
-    path('delete/<int:pk>/',views.delete,name='delete'),   
+    path('delete/<int:pk>/',views.delete,name='delete'),
+    path('toggle-address-status/',views.toggle_address_status , name='toggle_address_status'),
+     path('add-addresstwo/',views.add_addresstwo,name='add-addresstwo'),
+
 ]
