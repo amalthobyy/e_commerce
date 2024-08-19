@@ -15,6 +15,7 @@ class UserAddress(models.Model):
     
     status = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
+    order_status = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.name}, {self.house_name}, {self.street_name}, {self.district}, {self.state}, {self.country}'

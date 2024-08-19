@@ -1,0 +1,179 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block content %}
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Order detail</h2>
+            <h4>Order ID: {{ orders.order_id }}</h4>
+        </div>
+    </div>
+    <div class="card">
+        <header class="card-header">
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                    <span>
+                        <i class="material-icons md-calendar_today"></i> <b>{{ orders.date }}</b>
+                    </span> <br>
+                    <small class="text-muted">Order ID: {{ orders.order_id }}</small>
+                </div>
+                
+                <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                     <form method="post" action="{% url 'admindash:order_status' orders.id %}"> 
+                        {% csrf_token %}
+                        <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200" name="order_status">
+                            {% if orders.order_status == "Canceled" %}
+                            <option style="color:red;">Canceled</option>
+                            {% elif orders.order_status == "Order Placed" %}
+                            <option style="color:red;">Order Placed</option>
+                            {% else %}
+                            <option>Change status</option>
+                            <option>Confirmed</option>
+                            <option>Order Placed</option>
+                            <option>Shipped</option>
+                            <option>Canceled</option>
+                            {% endif %}
+                        </select>
+                        {% if orders.order_status != "Canceled" and orders.order_status != "Order Placed" %}
+                        <button class="btn btn-primary" type="submit">Save</button>
+                        {% endif %}
+                    </form>
+                    {% comment %} <form method="post" action="">
+                    <button class="btn btn-primary" type="submit">Save</button>
+                    </form> {% endcomment %}
+                </div>
+                
+            </div>
+        </header> <!-- card-header end// -->
+        <div class="card-body">
+            <div class="row mb-50 mt-20 order-info-wrap">
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-person"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Customer</h6>
+                            <p class="mb-1">
+                                {{ orders.address.name }} <br> {{ orders.user.email }} <br> +91 {{ orders.address.phone_number }}
+                            </p>
+                            <a href="#">View profile</a>
+                        </div>
+                    </article>
+                </div> <!-- col// -->
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-local_shipping"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Order info</h6>
+                            <p class="mb-1">
+                                Shipping: {{ orders.address.name }}<br> Pay method: {{ orders.payment_option }} <br> Status: {{ orders.order_status }}
+                            </p>
+                            <a href="#">Download info</a>
+                        </div>
+                    </article>
+                </div> <!-- col// -->
+                <div class="col-md-4">
+                    <article class="icontext align-items-start">
+                        <span class="icon icon-sm rounded-circle bg-primary-light">
+                            <i class="text-primary material-icons md-place"></i>
+                        </span>
+                        <div class="text">
+                            <h6 class="mb-1">Deliver to</h6>
+                            <p class="mb-1">
+                                Address : {{ orders.address.country }}, {{ orders.address.state }} <br>{{ orders.address.district }}, {{ orders.address.street_name }}<br>{{ orders.address.house_name }}<br>PIN: {{ orders.address.pin_number}}
+                            </p>
+                            <a href="#">View profile</a>
+                        </div>
+                    </article>
+                </div> <!-- col// -->
+            </div> <!-- row // -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th width="10%">Product</th>
+                                    <th width="10%">Name</th>
+                                    <th width="10%">Unit Price</th>
+                                    <th width="10%">Quantity</th>
+                                    {% comment %} <th width="10%">Status</th> {% endcomment %}
+                                    <th width="10%">Total</th>
+                                    <th width="10%">Discount Amount</th>
+                                    <th width="10%" class="text-end">Final Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_sub %}
+                                <tr>
+                                    <td class="align-middle">
+                                        <a class="itemside" href="#">
+                                            {% if item.variant.product.thumbnail %}
+                                            <div class="left" style="width:100px; height:100px;">
+                                                <img src="{{ item.variant.product.thumbnail.url }}" class="img-thumbnail" alt="{{ item.variant.product.product_name }}" style="width: 100%; height: auto;">
+                                            </div>
+                                            {% endif %}
+                                        </a>
+                                    </td>
+                                    <td class="align-middle">{{ item.variant.product.product_name }}</td>
+                                    <td class="align-middle">₹{{ item.price }}</td>
+                                    <td class="align-middle">{{ item.quantity }}</td>
+                                    {% comment %} <td class="align-middle">{% if item.status %}{{ item.status }}{% else %}Order Placed{% endif %}</td> {% endcomment %}
+                                    <td class="align-middle">₹{{ item.total_cost }}</td>
+                                    <td class="align-middle">₹{{ item.main_order.discount_amount }}</td>
+                                    <td class="align-middle text-end">₹{{ item.main_order.total_amount }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <td colspan="8">
+                                        <div class="float-end text-end">
+                                            <dl class="dlist">
+                                                <dt>Subtotal:</dt>
+                                                <dd>₹{{ orders.total_amount }}</dd>
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt>Discount Amount:</dt>
+                                                <dd>₹{{ orders.discount_amount }}</dd>
+                                            </dl>
+                                            
+                                            <dl class="dlist">
+                                                <dt>Grand total:</dt>
+                                                <dd><b class="h5">{{ orders.total_amount }}</b></dd>
+                                            </dl>
+                                            <dl class="dlist">
+                                                <dt class="text-muted">Status:</dt>
+                                                <dd>
+                                                    <span class="badge rounded-pill alert-success text-success">{{ orders.payment_status }}</span>
+                                                </dd>
+                                            </dl>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div> <!-- table-responsive// -->
+                    
+                </div> <!-- col// -->
+                
+            </div>
+        </div> <!-- card-body end// -->
+    </div> <!-- card end// -->
+</section> <!-- content-main end// -->
+<footer class="main-footer font-xs">
+    <div class="row pb-30 pt-15">
+        <div class="col-sm-6">
+            <script>
+            document.write(new Date().getFullYear())
+            </script> ©, Evara - HTML Ecommerce Template .
+        </div>
+        <div class="col-sm-6">
+            <div class="text-sm-end">
+                All rights reserved
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}

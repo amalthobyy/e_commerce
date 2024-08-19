@@ -28,35 +28,9 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','http://127.0.0.1:8000']
+ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'accounts.User'
-
-AUTHENTICATION_BACKENDS = [
-    'accounts.backends.EmailBackend',  
-    'social_core.backends.google.GoogleOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-]
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# SOCIALACCOUNT_PROVIDERS={
-#     'google':{
-#         'SCOPE':[
-#             'profile',
-#             'email',
-#         ],
-#         'AUTH_PARAMS':{
-#             'access_type':'online',
-#         }
-#     }
-  
-
-# }
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'
-# ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 
 
@@ -94,6 +68,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'accounts.middleware.CheckUserBlockedMiddleware',
+    'accounts.middleware.SocialAuthExceptionMiddleware',
+
 ]
 
 ROOT_URLCONF = 'dripdeck.urls'
@@ -136,8 +113,6 @@ DATABASES = {
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_EMAIL_REQUIRED = True
-
-SITE_ID = 1  # or whatever matches your site in the database
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -187,17 +162,46 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailBackend',  
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
 LOGIN_URL = 'login/'
 LOGOUT_URL = 'logout/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 
-# SOCIAL_AUTH_URL_NAMESPACE = 'social'
-# SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/accounts/login/'  # Adjust this to your actual login URL
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'accounts.pipeline.save_user_details',
+    'accounts.pipeline.activate_user',
+    'accounts.pipeline.check_if_user_blocked',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)

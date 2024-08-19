@@ -12,6 +12,7 @@ urlpatterns = [
     path('default/<int:pk>/',views.default,name='default'),
     path('delete/<int:pk>/',views.delete,name='delete'),
     path('toggle-address-status/',views.toggle_address_status , name='toggle_address_status'),
-     path('add-addresstwo/',views.add_addresstwo,name='add-addresstwo'),
+    path('add-addresstwo/',views.add_addresstwo,name='add-addresstwo'),
+    path('edit_address/<int:pk>',views.edit_address,name='edit_address'),
 
 ]

@@ -164,6 +164,14 @@ def cart_checkout(request):
             
             })
 
+def remove_item_cart(request,pk):
+     
+    cart_items = CartItem.objects.get(id=pk)
+    cart_items.delete()
+
+
+    return redirect('cart:list_cart')
+
         
         
     

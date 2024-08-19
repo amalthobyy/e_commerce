@@ -9,4 +9,5 @@ urlpatterns = [
     path('list_user/',views.list_user,name='list_user'),
     path('user_block/<int:user_id>/', views.user_block, name='user_block'),
     path('user_unblock/<int:user_id>/', views.user_unblock, name='user_unblock'),
+    path('order_status/<int:pk>/', views.order_status, name='order_status'),
 ]
