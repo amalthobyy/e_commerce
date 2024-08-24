@@ -1,0 +1,184 @@
+{% extends 'user/base.html' %}
+{% load static %}
+{% block content %}
+<style> 
+    .wishlist-item { 
+    display: flex; 
+    align-items: center; 
+    padding: 15px 0; 
+    border-bottom: 1px solid #eee; 
+    } 
+    .wishlist-item img { 
+    width: 60px; 
+    margin-right: 15px; 
+    } 
+    .wishlist-item .product-info { 
+    flex-grow: 1; 
+    } 
+    .wishlist-item h5 { 
+    margin: 0; 
+    color: #0066b2; 
+    } 
+    .wishlist-item .rating { 
+    color: #ffd700; 
+    } 
+    .wishlist-item p { 
+    margin: 2px 0; 
+    } 
+    .add-to-cart { 
+    background-color: #000; 
+    color: #fff; 
+    padding: 8px 16px; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    } 
+    .remove-icon { 
+    color: #999; 
+    font-size: 18px; 
+    margin-left: 15px; 
+    cursor: pointer; 
+    } 
+</style> 
+<div >
+    <div style="max-width: 1000px; margin: 0 auto; max-height: 1000px; margin-bottom:30px;">
+        <h4 style="padding-bottom:20px;">
+            <span style="font-size: 24px;">♥️</span> My Wishlist
+        </h4>
+        {% if wishlists %}
+        {% for wishlist in wishlists %}
+        <div class="wishlist-item">
+            <img src="{{ wishlist.variant.product.thumbnail.url }}" alt="{{ wishlist.variant.product.product_name }}">
+            <div class="product-info">
+                <h5 style="padding-bottom:5px;">{{ wishlist.variant.product.product_brand }}</h5>
+                <h4><a href="">{{ wishlist.variant.product.product_name }}</a></h4>
+                <p>Size: {{ wishlist.variant.size }}</p>
+                <p>Category: {{ wishlist.variant.product.product_category }}</p>
+                <p>Price: ₹ {{ wishlist.variant.product.offer_price }}</p>
+            </div>
+            <a href="{% url 'userdash:remove_wishlist' wishlist.id %}" class="btn btn-sm btn-outline-danger remove-item ms-3" data-url="">Remove</a>
+            {% comment %} <a href="#" class="btn btn-sm btn-outline-danger cart-item ms-3" data-product-id="{{ wishlist.variant.product.id }}" data-variant-id="{{ wishlist.variant.id }}">Add To Cart</a> {% endcomment %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="position-relative">
+            <div>
+                <img src="{% static 'banner/wishlist.jpg' %}" alt="" class="img-fluid">
+            </div>
+            <div style="">
+                <a href="{% url 'accounts:home' %}" 
+                class="btn btn-sm btn-outline-danger position-absolute" 
+                style="top: 380px; left: 490px; transform: translate(-50%, -50%);">
+                Shop Now
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+   
+</script>
+{% csrf_token %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.cart-item').on('click', function(e) {
+            e.preventDefault();
+    
+            var button = $(this);
+            var productId = button.data('product-id');
+            var variantId = button.data('variant-id');  // Ensure your button has this data attribute
+            console.log(productId)
+            console.log(productId)
+            if (!productId || !variantId) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Product or variant ID is missing.',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    toast: true,
+                    customClass: {
+                        container: 'swal2-container-top-end'
+                    }
+                });
+                return;
+            }
+    
+            if (button.text() === 'Go to Cart') {
+                // Redirect to the cart view
+                window.location.href = '';
+                return;
+            }
+    
+            $.ajax({
+                url: '',
+                type: 'POST',
+                data: {
+                    'product_id': productId,
+                    'variant_id': variantId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        button.text('Go to Cart');
+                        button.removeClass('btn-outline-danger').addClass('btn-success');
+    
+                        // Show SweetAlert notification
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500,
+                            toast: true,
+                            customClass: {
+                                container: 'swal2-container-top-end'
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500,
+                            toast: true,
+                            customClass: {
+                                container: 'swal2-container-top-end'
+                            }
+                        });
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'An error occurred: ' + errmsg,
+                        showConfirmButton: false,
+                        timer: 1500,
+                        toast: true,
+                        customClass: {
+                            container: 'swal2-container-top-end'
+                        }
+                    });
+                }
+            });
+        });
+    });
+    
+</script>
+
+
+
+{% endblock %}

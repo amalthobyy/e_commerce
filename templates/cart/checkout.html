@@ -95,7 +95,7 @@
                                   <div class="btn-group w-100">
                                       <label class="btn btn-secondary w-100 address-checkbox-label">
                                           <input
-                                              type="checkbox"
+                                              type="radio"
                                               class="form-check-input me-2 address-checkbox"
                                               id="{{ address.id }}"
                                               data-address-id="{{ address.id }}"
@@ -131,49 +131,54 @@
               <!-- Your Orders Section -->
               <div class="col-md-6">
                   <div class="card shadow-sm">
-                      <div class="card-body">
-                          <h4 class="card-title mb-4">Your Orders</h4>
-                          <div class="order-items">
-                              {% for item in cart_items %}
-                              <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
-                                  <img src="{{ item.variant.product.thumbnail.url }}" alt="{{ item.product.product_name }}" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover" />
-                                  <div class="flex-grow-1">
-                                      <h6 class="mb-0">{{ item.product.product_name }}</h6>
-                                      <small class="text-muted">Quantity: {{ item.quantity }}</small>
-                                  </div>
-                                  <div class="text-end">
-                                      <span class="fw-bold">₹{{ item.sub_total }}</span>
-                                  </div>
-                              </div>
-                              {% endfor %}
-                          </div>
-                          <div class="order-summary mt-4">
-                              <div class="d-flex justify-content-between mb-2">
-                                  <span>Subtotal</span>
-                                  <span>₹{{ cart_total }}</span>
-                              </div>
-                              <div class="d-flex justify-content-between mb-2">
-                                  <span>Shipping</span>
-                                  <span class="text-success">Free</span>
-                              </div>
-                              <div class="d-flex justify-content-between fw-bold mt-3 pt-3 border-top">
-                                  <span>Total</span>
-                                  <span>₹{{ cart_total }}</span>
-                              </div>
-                          </div>
-                          <hr class="my-4" />
-                          <form method="post" action="{% url 'order:place_order' %}">
-                              {% csrf_token %}
-                              <h5 class="mb-3">Payment Method</h5>
-                              <div class="mb-3">
-                                  <div class="form-check mb-2">
-                                      <input class="form-check-input" type="radio" name="payment_option" value="Cash On Delivery" id="Cash On Delivery" checked />
-                                      <label class="form-check-label" for="Cash On Delivery">Cash On Delivery</label>
-                                  </div>
-                              </div>
-                              <button type="submit" class="btn btn-outline-dark w-100 mt-3">Place Order</button>
-                          </form>
-                      </div>
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Your Orders</h4>
+                        <div class="order-items">
+                            {% for item in cart_items %}
+                            <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                                <img src="{{ item.variant.product.thumbnail.url }}" alt="{{ item.product.product_name }}" class="img-fluid rounded me-3" style="width: 60px; height: 60px; object-fit: cover" />
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0">{{ item.product.product_name }}</h6>
+                                    <small class="text-muted">Quantity: {{ item.quantity }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="fw-bold">₹{{ item.sub_total }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="order-summary mt-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <span>₹{{ cart_total }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping</span>
+                                <span class="text-success">Free</span>
+                            </div>
+                            <div class="d-flex justify-content-between fw-bold mt-3 pt-3 border-top">
+                                <span>Total</span>
+                                <span>₹{{ cart_total }}</span>
+                            </div>
+                        </div>
+                        <hr class="my-4" />
+                        <form id="order-form" method="post" action="{% url 'order:place_order' %}">
+                            {% csrf_token %}
+                            <h5 class="mb-3">Payment Method</h5>
+                            <div class="mb-3">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="payment_option" value="Cash On Delivery" id="CashOnDelivery" checked />
+                                    <label class="form-check-label" for="CashOnDelivery">Cash On Delivery</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="payment_option" value="Razorpay" id="Razorpay" />
+                                    <label class="form-check-label" for="Razorpay">Pay with Razorpay</label>
+                                </div>
+                            </div>
+                            <button id="place-order-button" type="submit" class="btn btn-outline-dark w-100 mt-3">Place Order</button>
+                        </form>
+                        
+                    </div>
                   </div>
               </div>
           </div>
@@ -186,110 +191,98 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+<!-- Razorpay Payment Handling -->
 <script>
-  document.addEventListener('DOMContentLoaded', (event) => {
-      {% if messages %}
-      const messages = [
-          {% for message in messages %}
-          "{{ message }}",
-          {% endfor %}
-      ];
-      messages.forEach(message => {
-          Swal.fire({
-              toast: true,
-              position: 'top-right',
-              icon: 'error',
-              title: message,
-              showConfirmButton: false,
-              timer: 3000
-          });
-      });
-      {% endif %}
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-      var dropdowns = document.querySelectorAll('.dropdown-toggle');
-      dropdowns.forEach(function(dropdown) {
-          new bootstrap.Dropdown(dropdown);
-      });
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-      const checkboxes = document.querySelectorAll('.address-checkbox');
-      checkboxes.forEach(function(checkbox) {
-          checkbox.addEventListener('change', function() {
-              if (this.checked) {
-                  checkboxes.forEach(function(otherCheckbox) {
-                      if (otherCheckbox !== checkbox) {
-                          otherCheckbox.checked = false;
-                      }
-                  });
-              }
-          });
-      });
-  });
-</script>
-
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle Razorpay payment
+        
+        // Display messages with SweetAlert2
+        {% if messages %}
+            const messages = [
+                {% for message in messages %}
+                    {
+                        type: "{{ message.tags }}",  // assuming message.tags contains the type ('success', 'error', etc.)
+                        text: "{{ message }}"
+                    },
+                {% endfor %}
+            ];
+            messages.forEach(message => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-right',
+                    icon: message.type === 'error' ? 'error' : 'success',
+                    title: message.text,
+                    showConfirmButton: false,
+                    timer: 3000,
+                    background: message.type === 'error' ? '#f8d7da' : '',
+                    color: message.type === 'error' ? '#721c24' : ''
+                });
+            });
+        {% endif %}
     
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          const checkboxes = document.querySelectorAll('.address-checkbox');
-          checkboxes.forEach(function(checkbox) {
-              checkbox.addEventListener('change', function() {
-                  if (this.checked) {
-                      const addressId = this.getAttribute('data-address-id');
-                      console.log(addressId)
-                      
-                      // AJAX request
-                      fetch("{% url 'userdash:toggle_address_status' %}", {
-                          method: "POST",
-                          headers: {
-                              'Content-Type': 'application/x-www-form-urlencoded',
-                              'X-CSRFToken': getCookie('csrftoken')
-                          },
-                          body: 'address_id=' + addressId
-                      })
-                      .then(response => response.json())
-                      .then(data => {
-                          if (data.success) {
-                              // If successful, uncheck all other checkboxes
-                              checkboxes.forEach(function(otherCheckbox) {
-                                  if (otherCheckbox !== checkbox) {
-                                      otherCheckbox.checked = false;
-                                  }
-                              });
-                          } else {
-                              // If there's an error, uncheck the current checkbox and show an error message
-                              this.checked = false;
-                              alert('Error: ' + (data.message || 'Failed to update address status.'));
-                          }
-                      })
-                      .catch(error => {
-                          console.error('Error:', error);
-                          this.checked = false;
-                          alert('An error occurred. Please try again.');
-                      });
-                  }
-              });
-          });
-      });
-      
-      // Function to get CSRF token
-      function getCookie(name) {
-          let cookieValue = null;
-          if (document.cookie && document.cookie !== '') {
-              const cookies = document.cookie.split(';');
-              for (let i = 0; i < cookies.length; i++) {
-                  const cookie = cookies[i].trim();
-                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                      break;
-                  }
-              }
-          }
-          return cookieValue;
-      }
+        // Initialize Bootstrap dropdowns
+        var dropdowns = document.querySelectorAll('.dropdown-toggle');
+        dropdowns.forEach(function(dropdown) {
+            new bootstrap.Dropdown(dropdown);
+        });
+    
+        // Handle address checkbox selection and AJAX submission
+        const checkboxes = document.querySelectorAll('.address-checkbox');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    const addressId = this.getAttribute('data-address-id');
+                    
+                    fetch("{% url 'userdash:toggle_address_status' %}", {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: 'address_id=' + addressId
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            checkboxes.forEach(function(otherCheckbox) {
+                                if (otherCheckbox !== checkbox) {
+                                    otherCheckbox.checked = false;
+                                }
+                            });
+                        } else {
+                            this.checked = false;
+                            alert('Error: ' + (data.message || 'Failed to update address status.'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        this.checked = false;
+                        alert('An error occurred. Please try again.');
+                    });
+                }
+            });
+        });
+    
+        // Function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+    
       </script>
 
 {% endblock %}

@@ -26,15 +26,20 @@
                                 <ul class="sidebar_categories">
                                      {% for category in categories %}
                                      <li>
-                                      <label for="check1"><span><span></span></span>{{ category.category_name}}</label>
-                                    </li>
+                                        <label for="check1">
+                                          <span><span></span></span>
+                                          <a href="?category={{ category.slug }}" style="color: black; text-decoration: none;">
+                                            {{ category.category_name }}
+                                          </a>
+                                        </label>
+                                      </li>
                                    {% endfor %}
                                 </ul>
                             </div>
                         </div>
                         <!--Categories-->
                         <!--Price Filter-->
-                        <div class="sidebar_widget filterBox filter-widget">
+                        {% comment %} <div class="sidebar_widget filterBox filter-widget">
                             <div class="widget-title">
                             	<h2>Price</h2>
                             </div>
@@ -53,7 +58,7 @@
                                     </div>
                                 </div>
                             </form>
-                        </div>
+                        </div> {% endcomment %}
                         <!--End Price Filter-->
                         <!--Size Swatches-->
 
@@ -67,9 +72,15 @@
                             <ul>
                               {% for brand in brands %}
                                 <li>
-                                  <li>
-                                    <label for="check1"><span><span></span></span>{{ brand.brand_name}}</label>
-                                  </li>
+                                    <li>
+                                        <label for="check1">
+                                          <span>
+                                            <a href="?brand={{ brand.brand_name }}" style="color: black; text-decoration: none;">
+                                              {{ brand.brand_name }}
+                                            </a>
+                                          </span>
+                                        </label>
+                                      </li>
                                 </li>
                                 {% endfor %}
                                 
@@ -86,9 +97,10 @@
                                     <div class="grid__item">
                                       <div class="mini-list-item">
                                         <div class="mini-view_image">
-                                            <a class="grid-view-item__link" href="#">
+                                             <a class="grid-view-item__link" href="#">
                                                 <img class="grid-view-item__image" src="{% static 'assets/images/product-images/mini-product-img.jpg' %}" alt="" />
-                                            </a>
+                                            </a> 
+                                            
                                         </div>
                                         <div class="details"> <a class="grid-view-item__title" href="#">Cena Skirt</a>
                                           <div class="grid-view-item__meta"><span class="product-price__price"><span class="money">$173.60</span></span></div>
@@ -134,45 +146,7 @@
                             <div class="widget-title"><h2>Information</h2></div>
                             <div class="widget-content"><p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p></div>
                         </div>
-                        <!--end Information-->
-                        <!--Product Tags-->
-                        <div class="sidebar_widget">
-                          <div class="widget-title">
-                            <h2>Product Tags</h2>
-                          </div>
-                          <div class="widget-content">
-                            <ul class="product-tags">
-                              <li><a href="#" title="Show products matching tag $100 - $400">$100 - $400</a></li>
-                              <li><a href="#" title="Show products matching tag $400 - $600">$400 - $600</a></li>
-                              <li><a href="#" title="Show products matching tag $600 - $800">$600 - $800</a></li>
-                              <li><a href="#" title="Show products matching tag Above $800">Above $800</a></li>
-                              <li><a href="#" title="Show products matching tag Allen Vela">Allen Vela</a></li>
-                              <li><a href="#" title="Show products matching tag Black">Black</a></li>
-                              <li><a href="#" title="Show products matching tag Blue">Blue</a></li>
-                              <li><a href="#" title="Show products matching tag Cantitate">Cantitate</a></li>
-                              <li><a href="#" title="Show products matching tag Famiza">Famiza</a></li>
-                              <li><a href="#" title="Show products matching tag Gray">Gray</a></li>
-                              <li><a href="#" title="Show products matching tag Green">Green</a></li>
-                              <li><a href="#" title="Show products matching tag Hot">Hot</a></li>
-                              <li><a href="#" title="Show products matching tag jean shop">jean shop</a></li>
-                              <li><a href="#" title="Show products matching tag jesse kamm">jesse kamm</a></li>
-                              <li><a href="#" title="Show products matching tag L">L</a></li>
-                              <li><a href="#" title="Show products matching tag Lardini">Lardini</a></li>
-                              <li><a href="#" title="Show products matching tag lareida">lareida</a></li>
-                              <li><a href="#" title="Show products matching tag Lirisla">Lirisla</a></li>
-                              <li><a href="#" title="Show products matching tag M">M</a></li>
-                              <li><a href="#" title="Show products matching tag mini-dress">mini-dress</a></li>
-                              <li><a href="#" title="Show products matching tag Monark">Monark</a></li>
-                              <li><a href="#" title="Show products matching tag Navy">Navy</a></li>
-                              <li><a href="#" title="Show products matching tag new">new</a></li>
-                              <li><a href="#" title="Show products matching tag new arrivals">new arrivals</a></li>
-                              <li><a href="#" title="Show products matching tag Orange">Orange</a></li>
-                              <li><a href="#" title="Show products matching tag oxford">oxford</a></li>
-                              <li><a href="#" title="Show products matching tag Oxymat">Oxymat</a></li>
-                            </ul>
-                            <span class="btn btn--small btnview">View all</span> </div>
-                        </div>
-                        <!--end Product Tags-->
+                       
                     </div>
 
                 </div>
@@ -199,7 +173,7 @@
                                         </a>
                                     </div>
                                     <div class="col-4 col-md-4 col-lg-4 text-center filters-toolbar__item filters-toolbar__item--count d-flex justify-content-center align-items-center">
-                                    	<span class="filters-toolbar__product-count">Showing: 22</span>
+                                    	<span class="filters-toolbar__product-count">Showing: {{count}}</span>
                                     </div>
                                     <div class="col-4 col-md-4 col-lg-4 text-right">
                                     	<div class="filters-toolbar__item">
@@ -242,7 +216,7 @@
                                                 <img class="hover blur-up lazyload" src="{% static 'assets/images/product-images/product-image1-1.jpg' %}" alt="image" title="product">
                                             {% endif %}
                                             <!-- product label -->
-                                            <div class="product-labels rectangular"><span class="lbl on-sale">-16%</span> <span class="lbl pr-label1">new</span></div>
+                                            {% comment %} <div class="product-labels rectangular"><span class="lbl on-sale">-16%</span> <span class="lbl pr-label1">new</span></div> {% endcomment %}
                                             <!-- End product label -->
                                         </a>
                                         <!-- end product image -->

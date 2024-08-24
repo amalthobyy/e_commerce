@@ -218,7 +218,9 @@ def remove(request,pk):
 #----------userside--------------
 def shop_page(request):
     sort_by = request.GET.get('SortBy')
-
+    category = request.GET.get('category')
+    brand = request.GET.get('brand')
+    
     sort_options = {
         'title-ascending': 'product_name',
         'title-descending': '-product_name',
@@ -232,12 +234,20 @@ def shop_page(request):
     if sort_by in sort_options:
         sort_field = sort_options[sort_by]
         products = Products.objects.all().order_by(sort_field)
+    elif brand:
+        products=Products.objects.filter(product_brand__brand_name=brand)   
+
+    elif category:
+        products = Products.objects.filter(product_category__slug=category)
+
     else:
         products = Products.objects.all()
+    
+    count = products.count()
 
     categories = Category.objects.all()
     brands = Brand.objects.all()
-    return render(request, 'user/product/shop_page.html',{'products':products, 'categories':categories, 'brands':brands})
+    return render(request, 'user/product/shop_page.html',{'products':products, 'categories':categories, 'brands':brands,'count':count})
 
 
 

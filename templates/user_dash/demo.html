@@ -271,9 +271,9 @@
                                                             <td>
                                                                 <div>
                                                                     {% if order.order_status == "Confirmed" or order.order_status == "Awaiting Payment" or order.order_status == "Shipped" %}
-                                                                    <form id="" method="post" action="{% url 'order:cancel_order' order.id %}">
+                                                                    <form id="return-order-form" method="post" action="{% url 'order:cancel_order' order.id %}">
                                                                         {% csrf_token %}
-                                                                        <button   type="submit" class="badge bg-danger no-outline" style="height: 25px; width: 100px; padding: 0; text-align: center; display: flex; align-items: center; justify-content: center;">
+                                                                        <button type="submit" class="badge bg-danger no-outline" style="height: 25px; width: 100px; padding: 0; text-align: center; display: flex; align-items: center; justify-content: center;">
                                                                             Cancel Order
                                                                         </button>
                                                                     </form>
@@ -322,7 +322,7 @@
                                                                                             Name:{{ item.main_order.address.name }}<br>
                                                                                             House Name: {{ item.main_order.address.house_name }}<br>
                                                                                             Size: {{ item.variant.size }}<br>
-                                                                                            Price: ₹{{ item.variant.product.offer_price }}<br>
+                                                                                            Price: ₹{{ item.price }}<br>
                                                                                             
                                                                                         </p>
                                                                                     </div>
@@ -411,7 +411,11 @@
                                                     </address>
                                                     <p>{{ address.country }}</p>
                                                     <div class="d-flex justify-content-end">
-                                                        <a href=""class="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#editModal">Edit</a>
+                                                        <form method="post" action="{% url 'userdash:edit_address' address.id %}">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                                                        </form>
+                                                        
                                                         <span class="mx-2">|</span>
                                                             <a href="{% url 'userdash:delete' address.id %}" class="btn btn-sm btn-link text-danger">Delete</a>
                                                     </div>
@@ -622,12 +626,31 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          
         </div>
       </div>
     </div>
   </div>
 
+
+  <div class="modal fade" id="reasonModal" tabindex="-1" aria-labelledby="reasonModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reasonModalLabel">Provide Reason</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reason-form">
+                    <div class="mb-3">
+                        <label for="reason-text" class="form-label">Reason:</label>
+                        <textarea class="form-control" id="reason-text" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
   
 </main>
 <script>
@@ -740,7 +763,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Return order form
     const returnForm = document.getElementById('return-order-form');
     if (returnForm) {
-        handleSweetAlert(returnForm, 'Are you sure?', 'Do you really want to return this order?');
+        handleSweetAlert(returnForm, 'Are you sure?', 'Do you really want to Cancel this order?');
     }
 });
 

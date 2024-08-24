@@ -1,6 +1,6 @@
 from django.db import models
 from accounts.models import User
-
+from product.models import *
 # Create your models here.
 class UserAddress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -23,3 +23,8 @@ class UserAddress(models.Model):
     class Meta:
         verbose_name = "User Address"
         verbose_name_plural = "User Addresses"
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    variant = models.ForeignKey(Product_Variant, on_delete=models.CASCADE)        

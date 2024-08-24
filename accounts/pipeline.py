@@ -1,6 +1,7 @@
 from django.db import IntegrityError
 from .models import *
 from social_core.pipeline.partial import partial
+from django.contrib import messages
 
 @partial
 def save_user_details(strategy, details, user=None, *args, **kwargs):
@@ -37,12 +38,12 @@ def activate_user(user, *args, **kwargs):
     user.is_active = True
     user.save()
 
-def check_if_user_blocked(user, *args, **kwargs):
+def check_if_user_blocked(strategy, user, *args, **kwargs):
     if user.is_blocked:
-        return {
-            'is_blocked': True,
-            'user': user
-        }
+        # Add an error message
+        messages.error(strategy.request, "Your account is blocked. Please contact support.")
+        return strategy.redirect('accounts:home')  # Redirect to an error page for blocked users
+
     return {
         'is_blocked': False,
         'user': user

@@ -13,6 +13,10 @@ urlpatterns = [
     path('delete/<int:pk>/',views.delete,name='delete'),
     path('toggle-address-status/',views.toggle_address_status , name='toggle_address_status'),
     path('add-addresstwo/',views.add_addresstwo,name='add-addresstwo'),
-    path('edit_address/<int:pk>',views.edit_address,name='edit_address'),
+    path('edit_address/<int:pk>/',views.edit_address,name='edit_address'),
+    path('search/', views.search, name='search'),
+    path('add-to-wishlist/',views.add_to_wishlist,name='add_to_wishlist'),
+    path('wishlist/',views.wishlist,name='wishlist'),
+    path('remove_wishlist/<int:pk>/',views.remove_wishlist,name='remove_wishlist'),
 
 ]

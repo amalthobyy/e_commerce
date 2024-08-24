@@ -2,6 +2,7 @@ from django.db import models
 from category.models import Category
 from brand.models import Brand
 from accounts.models import User
+from django.urls import reverse
 
 
 
@@ -29,6 +30,9 @@ class Products(models.Model):
         return 0
     def __str__(self):
         return f"{self.product_brand.brand_name}-{self.product_name}"
+    
+    def get_absolute_url(self):
+        return reverse('product_detail', args=[str(self.id)])
     
     
 class Product_Variant(models.Model):

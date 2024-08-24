@@ -28,7 +28,7 @@ class OrderMain(models.Model):
     is_active = models.BooleanField(default=True)
     payment_status = models.BooleanField(default=False)
     payment_id = models.CharField(max_length=50)
-    
+    reason=models.CharField(max_length=500,null=True)
     updated_at = models.DateTimeField(auto_now=True)  
     
 
