@@ -270,7 +270,7 @@
                                                             <td><span {% if order.order_status == "Order Placed" %} class="badge bg-success" {% elif order.order_status == "Confirmed" %} class="badge bg-warning" {% elif order.order_status == "Shipped" %} class="badge bg-primary" {% else %}class="badge bg-danger" {% endif %}>{{ order.order_status }}</span></td> 
                                                             <td>
                                                                 <div>
-                                                                    {% if order.order_status == "Confirmed" or order.order_status == "Awaiting Payment" or order.order_status == "Shipped" %}
+                                                                    {% if order.order_status == "Confirmed" or order.order_status == "Awaiting Payment" or order.order_status == "Shipped" or order.order_status == "Paid" %}
                                                                     <form id="return-order-form" method="post" action="{% url 'order:cancel_order' order.id %}">
                                                                         {% csrf_token %}
                                                                         <button type="submit" class="badge bg-danger no-outline" style="height: 25px; width: 100px; padding: 0; text-align: center; display: flex; align-items: center; justify-content: center;">
@@ -283,9 +283,9 @@
                                                                     {% if order.order_status == "Order Placed" %}
                                                                     <form id="return-order-form" method="post" action="">
                                                                         {% csrf_token %}
-                                                                        <button type="submit" class="badge bg-danger no-outline" style="height: 25px; width: 100px; padding: 0; text-align: center; display: flex; align-items: center; justify-content: center;">
+                                                                        {% comment %} <button type="submit" class="badge bg-danger no-outline" style="height: 25px; width: 100px; padding: 0; text-align: center; display: flex; align-items: center; justify-content: center;">
                                                                             Return Order
-                                                                        </button>
+                                                                        </button> {% endcomment %}
                                                                     </form>
                                                                     {% endif %}
                                                                 </div>

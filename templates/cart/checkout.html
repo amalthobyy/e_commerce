@@ -59,9 +59,53 @@
       margin-right: 10px;
   }
 
-  .card .btn-group {
-      margin-bottom: 0.75rem;
-  }
+
+  .modal-dialog {
+    max-width: 90%;
+    width: fit-content;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.coupon-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.coupon-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    width: calc(50% - 10px);
+    box-sizing: border-box;
+}
+
+.coupon-card h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.coupon-card p {
+    margin-bottom: 10px;
+}
+
+.btn-black {
+    background-color: black;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .coupon-card {
+        width: 100%;
+    }
+}
+
+
 </style>
 
 <main class="main">
@@ -156,10 +200,41 @@
                                 <span>Shipping</span>
                                 <span class="text-success">Free</span>
                             </div>
-                            <div class="d-flex justify-content-between fw-bold mt-3 pt-3 border-top">
-                                <span>Total</span>
-                                <span>₹{{ cart_total }}</span>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Discount</span>
+                                <span style="color:red;" class="discount" id="discount">0%</span>
                             </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Discount Amount</span>
+                                <span style="color:red;" class="discount_amount">₹0-</span>
+                            </div>
+                            <div class="d-flex justify-content-between fw-bold mt-3 pt-3 mb-3 border-top">
+                                <span>Total</span>
+                                <span class="cart-total">₹{{ cart_total }}</span>
+                            </div>
+                            <h8></h8>
+                            <form action="#" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="address_zip">Enter your coupon code if you have one.</label>
+                                    <input type="text" id="coupon-input" name="coupon" placeholder="Enter coupon code">
+                                </div>
+                                <div class="actionRow d-flex">
+                                    <div class="pr-2">
+                                        <button id="apply-coupon" type="button" class="btn btn-secondary btn--small" value="Apply Coupon">Apply Coupon</button>
+                                    </div>
+                                    <div class="ms-2">
+                                        <button id="remove-coupon" type="button" class="btn btn-secondary btn--small mt-0" value="Remove Coupon">Remove Coupon</button>
+                                    </div>
+                                    <div class="pl-2">
+                                        <button type="button" class="btn btn-secondary btn--small" data-bs-toggle="modal" data-bs-target="#couponModal">
+                                            Available Coupon
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            
+                            
                         </div>
                         <hr class="my-4" />
                         <form id="order-form" method="post" action="{% url 'order:place_order' %}">
@@ -183,6 +258,45 @@
               </div>
           </div>
       </div>
+      <div class="modal fade" id="couponModal" tabindex="-1" aria-labelledby="couponModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="coupon-container">
+                        {% for coupon in available_coupons %}
+                        <div class="coupon-card">
+                            <h4 class="coupon-code">{{ coupon.coupon_code }}</h4>
+                            <p><strong>Name:</strong> {{ coupon.coupon_name }}</p>
+                            <p><strong>Minimum Amount:</strong> {{ coupon.minimum_amount }}</p>
+                            <p><strong>Maximum Amount:</strong> {{ coupon.maximum_amount }}</p>
+                            <p><strong>Discount:</strong> <span class="badge bg-success">{{ coupon.discount }}% OFF</span></p>
+                            <p><strong>Expiry Date:</strong> {{ coupon.expiry_date }}</p>
+                            <p><strong>Status:</strong> 
+                                {% if coupon.status %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </p>
+                            <button class="btn btn-black btn-sm w-100" onclick="applyCoupon('{{ coupon.coupon_code }}')">Apply Coupon</button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="couponModal" tabindex="-1" aria-labelledby="couponModalLabel" aria-hidden="true">
+        <!-- ... rest of your modal content ... -->
+    </div>
+   
   </section>
 </main>
 
@@ -282,7 +396,77 @@
             return cookieValue;
         }
     });
-    
+
+
       </script>
+      <script>
+        function applyCoupon(couponCode) {
+            // Set the coupon code in the input field
+            document.getElementById('coupon-input').value = couponCode;
+            
+            // Close the modal
+            var modal = document.getElementById('couponModal');
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+            document.body.classList.remove('modal-open');
+            var modalBackdrop = document.querySelector('.modal-backdrop');
+            if (modalBackdrop) {
+                modalBackdrop.remove();
+            }
+        }
+
+        /////Apply Coupon
+
+        $(document).ready(function() {
+            $('#apply-coupon').click(function() {
+                var couponCode = $('#coupon-input').val();
+                $.ajax({
+                    url: "{% url 'order:applycoupon' %}",
+                    type: 'POST',
+                    data: {
+                        'coupon': couponCode,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update the cart total
+                            $('.cart-total').text('₹' + response.new_total);
+                            $('.discount_amount').text('₹' + response.discount_amount);
+                            $('.discount').text( response.discount + '%');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: response.message,
+                            });
+                        }
+                    },
+                    error: function(xhr, errmsg, err) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong. Please try again.',
+                        });
+                        console.log(xhr.status + ": " + xhr.responseText);
+                    }
+                });
+            });
+        
+            $('#remove-coupon').click(function() {
+                // You can implement the remove coupon functionality similarly
+                // Just ensure you set the cart total back to the original total
+                // before the coupon was applied.
+            });
+        });
+        
+        
+        </script>
 
 {% endblock %}

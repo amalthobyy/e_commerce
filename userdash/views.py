@@ -1,10 +1,12 @@
 
+from venv import logger
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from order.models import *
 from product.models import *
+from cart.models import*
 
 from .models import *
 
@@ -341,6 +343,54 @@ def remove_wishlist(request,pk):
         return redirect('userdash:wishlist')
 
 
+
+
+def wishlist_add_to_cart(request):
+    try:
+        if not request.user.is_authenticated:
+            return JsonResponse({'success': False, 'message': 'User not authenticated'}, status=403)
+
+        variant_id = request.POST.get('variant_id')
+        product_id = request.POST.get('product_id')
+
+        logger.info(f"Received request to add to cart. variant_id: {variant_id}, product_id: {product_id}")
+
+        if not variant_id or not product_id:
+            return JsonResponse({'success': False, 'message': 'Missing product or variant ID'}, status=400)
+
+        user = request.user
+        variant = get_object_or_404(Product_Variant, id=variant_id)
+        product = get_object_or_404(Products, id=product_id)
+
+        logger.info(f"Found product: {product.id} and variant: {variant.id}")
+
+        if not product.is_active:
+            return JsonResponse({'success': False, 'message': 'Product is unavailable'}, status=400)
+
+        if variant.variant_stock < 1:
+            return JsonResponse({'success': False, 'message': 'Product out of stock'}, status=400)
+
+        cart, created = Cart.objects.get_or_create(user=user)
+
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            product=product,
+            variant=variant,
+            defaults={'quantity': 1}
+        )
+
+        if not created:
+            if cart_item.quantity >= 5:
+                return JsonResponse({'success': False, 'message': 'Quantity limit exceeded for this item'}, status=400)
+            cart_item.quantity += 1
+            cart_item.save()
+
+        logger.info(f"Successfully added product {product.id} to cart for user {user.id}")
+        return JsonResponse({'success': True, 'message': 'Product added to cart successfully'})
+
+    except Exception as e:
+        logger.error(f"Error in wishlist_add_to_cart: {str(e)}", exc_info=True)
+        return JsonResponse({'success': False, 'message': 'An unexpected error occurred'}, status=500)
 
 
 

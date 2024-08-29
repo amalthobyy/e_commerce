@@ -1,0 +1,125 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5"> 
+    <div class="content-header"> 
+        <div class="d-flex justify-content-between align-items-center  mt-4"> 
+            <h1>Coupons </h1> 
+        </div> 
+        <div> 
+            <a href="{% url 'coupon:create_coupon' %}" class="btn btn-primary"> 
+                <i class="text-muted material-icons md-post_add"></i>Create Coupon 
+            </a> 
+        </div> 
+    </div> 
+    {% for coupon in coupons %}
+    <div class="card mb-4"> 
+        <div class="card-header d-flex justify-content-between align-items-center"> 
+            <h3 style="font-weight:bold;">Coupon Code : #{{ coupon.coupon_code }}</h3> 
+            <div> 
+                <form method="post" action="{% url 'coupon:edit_coupon' coupon.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-warning mb-5">
+                        Edit
+                    </button>
+                </form>
+                <form id="deleteForm_{{ coupon.id }}" method="post" action="{% url 'coupon:coupon_status' coupon.id %}">
+                    {% csrf_token %}
+                    <button type="submit" id="deleteButton_{{ coupon.id }}" class="btn btn-sm {% if coupon.status %}btn-success{% else %}btn-danger{% endif %}">
+                        {% if coupon.status %}
+                        delete
+                        {% else %}
+                        Restore
+                        {% endif %}
+                    </button>
+                </form>
+            </div> 
+        </div> 
+        <div class="card-body"> 
+            <div class="row"> 
+                <div class="col-md-8"> 
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <strong>Coupon Name: </strong> {{ coupon.coupon_name }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Minimum Amount: </strong>{{ coupon.minimum_amount }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Maximum Amount: </strong>{{ coupon.maximum_amount }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Discount: </strong>{{ coupon.discount }}%
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Expiry Date: </strong>{{ coupon.expiry_date }}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <strong>Status: </strong>{% if coupon.status %}Active{% else %}Inactive{% endif %}
+                        </div>
+                    </div>
+                </div> 
+            </div> 
+        </div> 
+    </div> 
+{% endfor %}
+ 
+</div>
+ <!-- Place these scripts before the closing </body> tag -->
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ 
+ <script>
+     document.addEventListener('DOMContentLoaded', function() {
+         // Select all delete buttons and forms
+         const deleteButtons = document.querySelectorAll('button[id^="deleteButton_"]');
+         const deleteForms = document.querySelectorAll('form[id^="deleteForm_"]');
+ 
+         deleteButtons.forEach((button, index) => {
+             button.addEventListener('click', function(event) {
+                 event.preventDefault(); // Prevent the form from submitting immediately
+ 
+                 Swal.fire({
+                     title: 'Are you sure?',
+                     text: "Do you really want to delete this coupon?",
+                     icon: 'warning',
+                     showCancelButton: true,
+                     confirmButtonColor: '#3085d6',
+                     cancelButtonColor: '#d33',
+                     confirmButtonText: 'Yes, delete it!',
+                     cancelButtonText: 'Cancel'
+                 }).then((result) => {
+                     if (result.isConfirmed) {
+                         deleteForms[index].submit(); // Submit the corresponding form if confirmed
+                     }
+                 });
+             });
+         });
+ 
+         {% if messages %}
+             const messages = [
+                 {% for message in messages %}
+                     {
+                         type: "{{ message.tags }}", // assuming message.tags contains the type ('success', 'error', etc.)
+                         text: "{{ message }}"
+                     },
+                 {% endfor %}
+             ];
+             messages.forEach(message => {
+                 Swal.fire({
+                     toast: true,
+                     position: 'top-right',
+                     icon: message.type === 'error' ? 'error' : 'success', // Show error icon for error messages
+                     title: message.text,
+                     showConfirmButton: false,
+                     timer: 3000,
+                     background: message.type === 'error' ? '#f8d7da' : '', // Optional: customize background color for errors
+                     color: message.type === 'error' ? '#721c24' : ''       // Optional: customize text color for errors
+                 });
+             });
+         {% endif %}
+     });
+ </script>
+ 
+{% endblock %}

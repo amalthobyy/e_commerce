@@ -57,6 +57,7 @@
                 <p>Price: ₹ {{ wishlist.variant.product.offer_price }}</p>
             </div>
             <a href="{% url 'userdash:remove_wishlist' wishlist.id %}" class="btn btn-sm btn-outline-danger remove-item ms-3" data-url="">Remove</a>
+            <a href="#" class="btn btn-sm btn-outline-danger cart-item ml-3" data-product-id="{{ wishlist.variant.product.id }}" data-variant-id="{{ wishlist.variant.id }}">Add to Cart</a>
             {% comment %} <a href="#" class="btn btn-sm btn-outline-danger cart-item ms-3" data-product-id="{{ wishlist.variant.product.id }}" data-variant-id="{{ wishlist.variant.id }}">Add To Cart</a> {% endcomment %}
         </div>
         {% endfor %}
@@ -177,6 +178,101 @@
         });
     });
     
+
+  
+
+</script>
+<script>
+    $(document).ready(function() {
+        $('.cart-item').on('click', function(e) {
+            e.preventDefault();
+    
+            var button = $(this);
+            var productId = button.data('product-id');
+            var variantId = button.data('variant-id');
+            
+            console.log('Adding to cart:', productId, variantId);
+
+            if (!productId || !variantId) {
+                console.error('Missing product or variant ID');
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Product or variant ID is missing.',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    toast: true,
+                    customClass: {
+                        container: 'swal2-container-top-end'
+                    }
+                });
+                return;
+            }
+    
+            if (button.text() === 'Go to Cart') {
+                window.location.href = '{% url "cart:list_cart" %}';  // Replace with your actual cart URL
+                return;
+            }
+    
+            $.ajax({
+                url: '{% url "userdash:wishlist_add_to_cart" %}',
+                type: 'POST',
+                data: {
+                    'product_id': productId,
+                    'variant_id': variantId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    console.log('Success response:', response);
+                    if (response.success) {
+                        button.text('Go to Cart');
+                        button.removeClass('btn-outline-danger').addClass('btn-success');
+    
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500,
+                            toast: true,
+                            customClass: {
+                                container: 'swal2-container-top-end'
+                            }
+                        });
+                    } else {
+                        console.error('Error response:', response);
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 1500,
+                            toast: true,
+                            customClass: {
+                                container: 'swal2-container-top-end'
+                            }
+                        });
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error('XHR:', xhr);
+                    console.error('Error message:', errmsg);
+                    console.error('Error:', err);
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'An error occurred: ' + errmsg,
+                        showConfirmButton: false,
+                        timer: 1500,
+                        toast: true,
+                        customClass: {
+                            container: 'swal2-container-top-end'
+                        }
+                    });
+                }
+            });
+        });
+    });
 </script>
 
 

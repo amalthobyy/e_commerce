@@ -120,7 +120,7 @@
                                             </div>
                                         </div>                                
                                         <div class="product-form__item--submit">
-                                            <button type="button" id="product-cart-button" name="add" class="btn product-form__cart-submit" style="background-color: black; color: white;" data-product-id="{{ product.id }}">
+                                            <button type="button" id="product-cart-button" name="add" class="btn product-form__cart-submit" style="background-color: black; color: white;" data-product-id="{{ product.id }}" data-cart-url="{% url 'cart:list_cart' %}">
                                                 Add to cart
                                             </button>
                                         </div>
@@ -352,14 +352,19 @@
             });
         
             $('#product-cart-button').on('click', function() {
-                const productId = $(this).data('product-id');
-                const quantity = $('#Quantity').val(); // Get the quantity value
+                const button = $(this);
+                const productId = button.data('product-id');
+                const quantity = $('#Quantity').val();
         
                 console.log("Selected Variant ID:", selectedVariantId);
                 console.log("Product ID:", productId);
                 console.log("Quantity:", quantity);
-        
                 console.log("CSRF Token:", getCookie('csrftoken'));
+        
+                if (button.text() === 'Go to Cart') {
+                    window.location.href = '{% url "cart:list_cart" %}';  // Replace with your actual cart view URL
+                    return;
+                }
         
                 if (selectedVariantId) {
                     $.ajax({
@@ -371,7 +376,7 @@
                         data: {
                             product_id: productId,
                             variant_id: selectedVariantId,
-                            quantity: quantity 
+                            quantity: quantity
                         },
                         success: function(response) {
                             Swal.fire({
@@ -380,6 +385,8 @@
                                 icon: 'success',
                                 confirmButtonText: 'OK'
                             });
+                            button.text('Go to Cart');
+                            button.css('background-color', '#28a745');  // Change to green
                         },
                         error: function() {
                             Swal.fire({

@@ -56,9 +56,28 @@ INSTALLED_APPS = [
     'cart',
     'order',
     'social_django',
+    'coupon',
     
    
 ]
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
 
 # SITE_ID = 1
 # SOCIALACCOUNT_LOGIN_ON_GET = True

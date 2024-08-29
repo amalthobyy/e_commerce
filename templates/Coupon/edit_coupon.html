@@ -1,0 +1,119 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block content %}
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">Edit Coupon</h2>
+            </div>
+        </div>
+        <div style="width:900px;" class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Edit</h4>
+                </div>
+                <div class="card-body">
+                    <form id="couponForm" method="post" action="{% url 'coupon:edit_coupon' coupon.id %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label style="font-weight: bold;" class="form-label">Coupon Name</label>
+                                <input type="text" placeholder="Type here" class="form-control" name="coupon_name" value="{{ coupon.coupon_name }}" id="coupon_name" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label style="font-weight: bold;" class="form-label">Minimum Amount</label>
+                                <input type="number" placeholder="Type here" class="form-control" name="minimum_amount" value="{{ coupon.minimum_amount }}" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label style="font-weight: bold;" class="form-label">Maximum Amount</label>
+                                <input type="number" placeholder="Type here" class="form-control" name="maximum_amount" value="{{ coupon.maximum_amount }}" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label style="font-weight: bold;" class="form-label">Discount</label>
+                                <input type="number" placeholder="Type here" class="form-control" name="discount" value="{{ coupon.discount }}" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label style="font-weight: bold;" class="form-label">Expiry Date</label>
+                                <input type="date" class="form-control" name="expiry_date" value="{{ coupon.expiry_date }}" required>
+                            </div>
+                        </div>
+                        <div class="card mb-8">
+                            <div class="card-body">
+                                <p>Coupon Code</p>
+                                <div class="input-upload">
+                                    <input type="text" class="form-control" name="generated_coupon_code" id="generated_coupon_code" value="{{ coupon.coupon_code }}">
+                                    <input type="hidden" name="generated_coupon_code" id="hidden_coupon_code" value="{{ coupon.coupon_code }}">
+                                </div>
+                                <button type="button" class="btn btn-md rounded font-sm hover-up mt-3" onclick="generateCouponCode()">Generate</button>
+                            </div>
+                        </div>
+                        <label style='padding-top:10px;' class="form-check mb-4">
+                            <input class="form-check-input" name="status" type="checkbox" value="True" {% if coupon.status %}checked{% endif %}>
+                            <span style="font-weight: bold;" class="form-check-label"> Status</span>
+                        </label>
+                        <div>
+                            <button type="submit" style="font-weight: bold;" class="btn btn-md rounded font-sm hover-up">Update Coupon</button>
+                        </div>
+                    </form>
+                    <div>
+                        <a href="{% url 'coupon:coupon' %}" style="font-weight: bold;" class="btn btn-md rounded font-sm hover-up mt-2">Go Back</a>
+                    </div> 
+                </div>
+            </div> <!-- card end// -->
+        </div>
+    </div>
+</section> <!-- content-main end// -->
+
+<script>
+    function generateCouponCode() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        const length = 10; // Set the length of the random string here
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        document.getElementById('generated_coupon_code').value = result;
+        document.getElementById('hidden_coupon_code').value = result;
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.all.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+    {% if messages %}
+        const messages = [
+            {% for message in messages %}
+                {
+                    type: "{{ message.tags }}",  // assuming message.tags contains the type ('success', 'error', etc.)
+                    text: "{{ message }}"
+                },
+            {% endfor %}
+        ];
+        messages.forEach(message => {
+            Swal.fire({
+                toast: true,
+                position: 'top-right',
+                icon: message.type === 'error' ? 'error' : 'success',  // Show error icon for error messages
+                title: message.text,
+                showConfirmButton: false,
+                timer: 3000,
+                background: message.type === 'error' ? '#f8d7da' : '', // Optional: customize background color for errors
+                color: message.type === 'error' ? '#721c24' : ''       // Optional: customize text color for errors
+            });
+        });
+    {% endif %}
+});
+</script>
+{% endblock %}

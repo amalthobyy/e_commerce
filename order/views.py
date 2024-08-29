@@ -8,7 +8,10 @@ from datetime import datetime, timedelta
 from .models import *
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from coupon.models import*
 import razorpay
+from django.http import JsonResponse
+import json
 
 # Create your views here.
 
@@ -47,6 +50,7 @@ def orderverification(request):
         
 
     if payment_option =="Razorpay":
+
         return redirect('order:razorpay_payment')
     
 
@@ -172,8 +176,10 @@ def razorpay_payment(request):
     cart = Cart.objects.get(user=current_user)
     cart_items = CartItem.objects.filter(cart=cart, is_active=True)
     address = UserAddress.objects.filter(user=current_user, is_deleted=False, order_status=True).first()
-    new_total = sum(item.sub_total() for item in cart_items)
-
+    new_total = round(sum(item.sub_total() for item in cart_items), 2)
+    if new_total < 1:   
+        messages.error(request, 'The total amount is too low to proceed with payment.')
+        return redirect('cart:cart_checkout')
     # Create Razorpay order
     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
     payment_order = client.order.create({
@@ -227,8 +233,12 @@ def razorpay_payment(request):
 
             cart_item.variant.variant_stock -= cart_item.quantity
             cart_item.variant.save()
-
-    cart_items.delete()
+            
+            cart_items.delete()
+            
+            
+    
+    
 
     context = {
         'new_total': int(new_total * 100),
@@ -239,5 +249,86 @@ def razorpay_payment(request):
         'user_phone': current_user.profile.phone if hasattr(current_user, 'profile') else '',
     }
 
+
     return render(request, 'cart/razorpay.html', context)
+
+
+
+@csrf_exempt
+def handle_razorpay_payment(request):
+    if request.method == "POST":
+        try:
+            # Parse the received data from the Razorpay handler
+            data = json.loads(request.body)
+            razorpay_payment_id = data.get('razorpay_payment_id')
+            razorpay_order_id = data.get('razorpay_order_id')
+            order_main_id = data.get('order_main_id')
+
+            # Initialize Razorpay client
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+            # Verify the payment
+            payment = client.payment.fetch(razorpay_payment_id)
+            if payment['status'] == 'captured':
+                # Update the order status to 'Paid' if the payment was successful
+                order_main = OrderMain.objects.get(id=order_main_id)
+                order_main.order_status = "Paid"
+                order_main.save()
+
+                # Return a successful response with redirect URL
+                success_url = reverse('order:order_success')
+                return JsonResponse({'success': True, 'redirect_url': success_url})
+            else:
+                # Handle cases where payment is not captured
+                return JsonResponse({'success': False, 'message': 'Payment not captured'})
+
+        except OrderMain.DoesNotExist:
+            # Handle case where the order does not exist
+            return JsonResponse({'success': False, 'message': 'Order does not exist'})
+
+        except Exception as e:
+            # Handle general exceptions
+            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+
+    # Return an error if the request method is not POST
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+
+
+def applycoupon(request):
+    if request.method == 'POST':
+        coupon = request.POST.get('coupon')
+        cart = Cart.objects.get(user=request.user)
+        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+        total = sum(item.sub_total() for item in cart_items)
+        
+        if coupon:
+            try:
+                coupon_code = Coupon.objects.get(coupon_code=coupon)
+
+                if total > coupon_code.minimum_amount:
+                    discount = coupon_code.discount
+                    discount_amount = (total * discount / 100)
+                    discount_amount = min(discount_amount, coupon_code.maximum_amount)
+                    new_total = total - discount_amount
+
+                    return JsonResponse({
+                        'success': True,
+                        'new_total': new_total,
+                        'discount_amount':discount_amount,
+                        'discount':discount,
+                        'message': 'Coupon applied successfully!'
+                    })
+                else:
+                    return JsonResponse({
+                        'success': False,
+                        'message': f'Coupon only available for orders over {coupon_code.minimum_amount}'
+                    })
+            except Coupon.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Invalid coupon code'
+                })
+        
+        
 

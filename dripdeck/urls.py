@@ -29,6 +29,7 @@ urlpatterns = [
     path('userdash/',include('userdash.urls')),
     path('cart/',include('cart.urls')),
     path('order/',include('order.urls')),
+    path('coupon/',include('coupon.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
 ]
 if settings.DEBUG:
