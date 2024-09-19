@@ -141,7 +141,7 @@
                                             
                                             <dl class="dlist">
                                                 <dt>Grand total:</dt>
-                                                <dd><b class="h5">{{ orders.total_amount }}</b></dd>
+                                                <dd><b class="h5">{{ orders.final_amount }}</b></dd>
                                             </dl>
                                             <dl class="dlist">
                                                 <dt class="text-muted">Status:</dt>
@@ -154,6 +154,17 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <div >
+                            {% if orders.order_status != "Canceled" and orders.order_status != "Delivered" and orders.order_status != "Returned" %}
+                            <form id="cancelForm_{{ orders.id }}" action="{% url 'order:admin_cancel_order' orders.id %}" method="post">
+                                {% csrf_token %}
+                                <div style="margin-left:700px;" class="mb-2">
+                                    <!-- SweetAlert trigger button -->
+                                    <button id="cancelButton_{{ orders.id }}" class="btn btn-danger" style="width:100px;" type="button" onclick="confirmCancel('{{ orders.id }}')">Cancel</button>
+                                </div>
+                            </form>
+                        {% endif %}
+                        </div>
                     </div> <!-- table-responsive// -->
                     
                 </div> <!-- col// -->
@@ -176,4 +187,25 @@
         </div>
     </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmCancel(orderId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to cancel this order?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form if the user confirms
+                document.getElementById('cancelForm_' + orderId).submit();
+            }
+        });
+    }
+    </script>
 {% endblock %}

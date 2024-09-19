@@ -1,45 +1,141 @@
 {% extends 'user/base.html' %}
-{% comment %} {% load socialaccount %} {% endcomment %}
-
+{% load static %}
 {% block content %}
+<style>
+    @font-face {
+        font-family: 'myfont';
+        src: url("{% static 'assets/fonts/font.TTF' %}");
+    }
+    h1{
+        font-family:myfont;
+        
+        color: black; /* Set the text color to black */
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), /* White glow */
+                     0 0 20px rgba(255, 255, 255, 0.6),
+                     0 0 30px rgba(255, 255, 255, 0.4);
+
+    }
+    .video-background {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        z-index: -1000;
+        background-size: cover;
+    }
+    .login-container {
+        background-color: rgba(255, 255, 255, 0);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0);
+    }
+    .login-title {
+        font-family: myfont;
+        font-weight: bold;
+        
+        margin-bottom: 30px;
+    }
+    .form-control {
+        border-radius: 25px;
+    }
+    .btn-login {
+        border-radius: 25px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .social-login {
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+    .social-login:hover {
+        transform: translateY(-3px);
+    }
+    .forgot-create {
+        margin-top: 20px;
+    }
+    label {
+        color: black;
+        font-weight: bold; /* Optional: Make the text bold if desired */
+    }
+</style>
+
+<video autoplay muted loop class="video-background">
+    <source src="{% static 'assets/images/drip/creapdawg.mp4' %}">
+    Your browser does not support the video tag.
+</video>
+
 <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center align-items-center" style="height: 100vh;">
         <div class="col-md-6">
-            <h1 class="text-center mb-4">LOGIN</h1>
-            <form method="post" action="" id="CustomerLoginForm" class="mb-4">
-                {% csrf_token %}
-                <div class="form-group mb-3">
-                    <label for="{{ form.username.id_for_label }}">Email:</label>
-                    {{ form.username }}
-                    {% for error in form.username.errors %}
-                        <div class="text-danger">{{ error }}</div>
-                    {% endfor %}
-                </div>
-                <div class="form-group mb-3">
-                    <label for="{{ form.password.id_for_label }}">Password:</label>
-                    {{ form.password }}
-                    {% for error in form.password.errors %}
-                        <div class="text-danger">{{ error }}</div>
-                    {% endfor %}
-                </div>
-                <button type="submit" class="btn btn-dark w-100 mb-3">LOGIN</button>
-            </form>
-            
-            <p class="text-center mb-3">or sign in with</p>
-            
-            <div class="d-grid gap-2 mb-3">
-                <button  class="btn btn-outline-secondary">
-                    <a style="color:black;" href="{% url 'social:begin' 'google-oauth2' %}">Sign in with Google</a>
-                </button>
+            <div class="login-container">
+                <h1 class="text-center login-title">Greetings</h1>
+                <form method="post" action="" id="CustomerLoginForm" class="mb-4">
+                    {% csrf_token %}
+                    <div class="form-group mb-3">
+                        <label for="{{ form.username.id_for_label }}">Email:</label>
+                        {{ form.username }}
+                        {% for error in form.username.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="{{ form.password.id_for_label }}">Password:</label>
+                        {{ form.password }}
+                        {% for error in form.password.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100 mb-3 btn-login">LOGIN</button>
+                </form>
                 
+                <p class="text-center mb-3">or sign in with</p>
+                
+                <div class="d-grid gap-2 mb-3">
+                    <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-outline-secondary social-login">
+                        <i class="fab fa-google me-2"></i> Sign in with Google
+                    </a>
+                </div>
+                
+                <div class="text-center forgot-create">
+                    <a href="{% url 'accounts:password_reset' %}" class="text-decoration-none me-3">Forgot your password?</a>
+                    <a href="{% url 'accounts:signup' %}" class="text-decoration-none">Create account</a>
+                </div> 
             </div>
-            
-             <div class="text-center">
-                <a href="#" class="text-decoration-none">Forgot your password?</a> |
-                <a href="{% url 'accounts:signup' %}" class="text-decoration-none">Create account</a>
-            </div> 
         </div>
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        {% if messages %}
+            const messages = [
+                {% for message in messages %}
+                    {
+                        "message": "{{ message }}",
+                        "level": "{{ message.level_tag }}"  // 'success', 'error', etc.
+                    },
+                {% endfor %}
+            ];
+    
+            messages.forEach(msg => {
+                let iconType = msg.level === 'success' ? 'success' : 'error';  // Set icon based on message type
+                Swal.fire({
+                    toast: true,
+                    position: 'top-right',
+                    icon: iconType,
+                    title: msg.message,
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            });
+        {% endif %}
+    });
+    </script>
 {% endblock %}

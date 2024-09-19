@@ -12,6 +12,6 @@ urlpatterns = [
     path('update-quantity/',views.update_cart_quantity, name='update_cart_quantity'),
     path('cart_checkout/',views.cart_checkout, name='cart_checkout'),
     path('remove_item_cart/<int:pk>/',views.remove_item_cart, name='remove_item_cart'),
-    path('apply-coupon/',views.apply_coupon, name='apply_coupon'),
-    path('remove-coupon/',views.remove_coupon, name='remove_coupon'),
+    # path('apply-coupon/',views.apply_coupon, name='apply_coupon'),
+    # path('remove-coupon/',views.remove_coupon, name='remove_coupon'),
 ]

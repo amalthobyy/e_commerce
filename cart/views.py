@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render,redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
 from userdash.models import *
 from coupon.models import *
@@ -10,7 +11,7 @@ from product.models import *
 from django.contrib import messages
 
 
-
+@login_required
 def add_to_cart(request):
     print("Add to cart view called")
     if request.method == "POST":
@@ -63,7 +64,7 @@ def add_to_cart(request):
     
 
 
-
+@login_required
 def list_cart(request):
      
      cart = get_object_or_404(Cart, user=request.user)
@@ -136,7 +137,6 @@ def cart_checkout(request):
     cart_items = CartItem.objects.filter(cart=cart,is_active=True)
     
 
-
     if not cart_items.exists():
         messages.error(request, 'Select Product')
         return redirect('cart:list_cart')
@@ -164,32 +164,22 @@ def cart_checkout(request):
     used_coupons = UserCoupon.objects.filter(user=request.user).values_list('coupon',flat=True) 
     available_coupons = available_coupons.exclude(id__in=used_coupons)
 
-    coupon_code = request.session.get('applied_coupon', None)
-    discount = 0
-    coupon_name = "Not Applied"
-    if coupon_code:
-            try:
-                coupon = Coupon.objects.get(coupon_code=coupon_code)
-                discount = coupon.maximum_amount
-                coupon_name = coupon.coupon_name
-                discount_amount = (cart_total * discount / 100)
-                if discount_amount > discount:
-                    discount_amount = discount
-                cart_total -= discount_amount
-            except Coupon.DoesNotExist:
-                pass
+    
             
 
     user_address = UserAddress.objects.filter(user=request.user.id,is_deleted=False).order_by('-status', 'id')
+    print(cart_total)
 
     return render(request,'cart/checkout.html', {
             'cart_items': cart_items,
             'cart_total': cart_total,
             'user_address': user_address,
-            'discount':discount,
-            'coupon_name':coupon_name,
+            'discount':0,
+            'coupon_name':"Not Applyed",
             'available_coupons': available_coupons,
             })
+
+
 
 def remove_item_cart(request,pk):
      
@@ -200,77 +190,7 @@ def remove_item_cart(request,pk):
     return redirect('cart:list_cart')
 
         
-        
-@csrf_exempt
-def apply_coupon(request):
-    if request.method == 'POST':
-        coupon_code = request.POST.get('coupon_code')
-        response = {'success': False}
-        
-        try:
-            cart = Cart.objects.get(user=request.user)
-            cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-            current_total = sum(item.sub_total() for item in cart_items)
-        except Cart.DoesNotExist:
-            response['message'] = 'Cart not found.'
-            return JsonResponse(response)
-
-        if coupon_code:
-            try:
-                coupon = Coupon.objects.get(coupon_code=coupon_code)
-                
-                if current_total >= coupon.minimum_amount:
-                    discount = coupon.discount
-                    discount_amount = (current_total * discount / 100)
-
-                    # Cap the discount amount to the maximum amount
-                    discount_amount = min(discount_amount, coupon.maximum_amount)
-                    
-                    new_total = current_total - discount_amount
-
-                    response.update({
-                        'success': True,
-                        'message': 'Coupon applied successfully.',
-                        'current_total': current_total,
-                        'new_total': new_total,
-                        'discount': discount,
-                        'discount_amount': discount_amount
-                    })
-                    
-                    request.session['applied_coupon'] = coupon_code
-                else:
-                    response['message'] = f'Coupon only available for orders over {coupon.minimum_amount}'
-            except Coupon.DoesNotExist:
-                response['message'] = 'Invalid coupon code.'
-        else:
-            new_total = sum(item.sub_total() for item in cart_items)
-            response.update({
-                'success': True,
-                'new_total': new_total,
-                'discount': 0,
-                'discount_amount': 0,
-            })
-
-        return JsonResponse(response)
-
-@csrf_exempt
-def remove_coupon(request):
-    if request.method == 'POST':
-        response = {'success': False}
-        cart = Cart.objects.get(user=request.user)
-        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-        
-        request.session.pop('applied_coupon', None)
-
-        new_total = sum(item.sub_total() for item in cart_items)
-        response.update({
-            'success': True,
-            'message': 'Coupon removed successfully.',
-            'new_total': new_total,
-            'discount': 0
-        })
-
-        return JsonResponse(response)  
+    
 
 
 

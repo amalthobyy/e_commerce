@@ -1,0 +1,238 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block content %}
+<!-- Other head elements -->
+<!-- Other head elements -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.26/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Sales Report </h2>
+            <p>Whole data about your order here</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button id="download-pdf" class="btn btn-primary">
+                <i class="text-muted material-icons md-post_add"></i>Download as PDF
+            </button>
+            <button id="download-excel" class="btn btn-primary">
+                <i class="text-muted material-icons md-post_add"></i>Download as Excel
+            </button>
+        </div>
+        
+    </div>
+    
+    <div class="mb-4">
+        <form method="post" action="{% url 'admindash:date_filter' %}" class="row g-2">
+            {% csrf_token %}
+            <div class="col-auto d-flex align-items-center">
+                <h5 class="mb-0">Start Date:</h5>
+            </div>
+            <div class="col-auto">
+                <input type="date" name="start_date" class="form-control" placeholder="Start date">
+            </div>
+            <div class="col-auto d-flex align-items-center">
+                <h5 class="mb-0">End Date:</h5>
+            </div>
+            <div class="col-auto">
+                <input type="date" name="end_date" class="form-control" placeholder="End date">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+        <div class="col-auto">
+            <button type="button" id="filter-weekly" class="btn btn-primary me-2" data-filter="weekly">Weekly</button>
+            <button type="button" id="filter-monthly" class="btn btn-primary" data-filter="monthly">Monthly</button>
+        </div>
+        
+    </div>
+    
+    
+    <!-- Table -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <!-- Summary Section -->
+           <!-- Summary Section -->
+<div class="mb-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary">Number of Orders</h5>
+                    <p class="card-text display-4">{{ total_orders }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-success">Total Order Amount</h5>
+                    <p class="card-text display-4">₹{{ total_order_amount }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-info">Total Discount</h5>
+                    <p class="card-text display-4">₹{{ total_discount }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+            <!-- Table Section -->
+            <div class="table-responsive">
+                <table class="table" id="sales-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Discount</th>
+                            <th>Order Total</th>
+                            <th>Payment Method</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.date }}</td>
+                            <td>{{ order.order_id }}</td>
+                            <td>{{ order.user.username }}</td>
+                            <td>₹{{ order.total_amount }}</td>
+                            {% if order.discount_amount %}
+                            <td>₹{{ order.discount_amount }}</td>
+                            {% else %}
+                            <td>Nill</td>
+                            {% endif %}
+                            <td>₹{{ order.final_amount }}</td>
+                            <td>{{ order.payment_option }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">No orders found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item"><a class="page-link" href="#">02</a></li>
+                <li class="page-item"><a class="page-link" href="#">03</a></li>
+                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                <li class="page-item"><a class="page-link" href="#">16</a></li>
+                <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+</section> <!-- content-main end// -->
+<script>
+    document.getElementById('filter-weekly').addEventListener('click', function() {
+        window.location.href = "{% url 'admindash:sales_report' %}?filter=weekly";
+    });
+    
+    document.getElementById('filter-monthly').addEventListener('click', function() {
+        window.location.href = "{% url 'admindash:sales_report' %}?filter=monthly";
+    });
+    </script>
+    <script>
+        document.getElementById('download-pdf').addEventListener('click', function () {
+            console.log('Download PDF button clicked');
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const table = document.getElementById('sales-table');
+            
+            // Add title
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.text("Dripcartel Sales Report", 14, 20);
+            
+            // Add summary
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(50); // Dark gray for subtle emphasis
+            doc.text(`Number of Orders: {{ total_orders }}`, 14, 30);
+            doc.text(`Total Order Amount: ₹{{ total_order_amount }}`, 14, 36);
+            doc.text(`Total Discount: ₹{{ total_discount }}`, 14, 42);
+            
+            // Add the table
+            doc.autoTable({
+                html: table,
+                startY: 50,
+                styles: {
+                    fontSize: 10,
+                    halign: 'center',
+                    valign: 'middle',
+                    fillColor: [255, 255, 255],
+                    textColor: [0, 0, 0],
+                },
+                headStyles: {
+                    fillColor: [0, 0, 0], // Black for header background
+                    textColor: [255, 255, 255], // White text
+                    fontStyle: 'bold',
+                    fontSize: 10,
+                },
+                bodyStyles: {
+                    fillColor: [255, 255, 255], // White for row background
+                    textColor: [0, 0, 0],
+                    fontSize: 10,
+                },
+                alternateRowStyles: {
+                    fillColor: [240, 240, 240], // Light gray for alternate rows
+                },
+                margin: { top: 50 },
+                tableLineColor: [0, 0, 0],
+                tableLineWidth: 0.75
+            });
+            
+            // Save the PDF
+            doc.save('sales_report.pdf');
+        });
+    
+        document.getElementById('download-excel').addEventListener('click', function () {
+            console.log('Download Excel button clicked');
+            
+            const table = document.getElementById('sales-table');
+            if (!table) {
+                console.error('Sales table not found');
+                return;
+            }
+    
+            const ws = XLSX.utils.table_to_sheet(table);
+            
+            // Add summary at the top
+            XLSX.utils.sheet_add_aoa(ws, [
+                ["Sales Report"],
+                ["Number of Orders", "{{ total_orders }}"],
+                ["Total Order Amount", "₹{{ total_order_amount }}"],
+                ["Total Discount", "₹{{ total_discount }}"]
+            ], { origin: 'A1' });
+        
+            // Adjust formatting for professional presentation
+            ws['A1'].s = { font: { sz: 16, bold: true } };  // Title style
+            ws['A2'].s = ws['A3'].s = ws['A4'].s = { font: { bold: true }, alignment: { horizontal: "left" } };
+            
+            // Create a new workbook and append the sheet
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Sales Report");
+        
+            // Save the Excel file
+            XLSX.writeFile(wb, "sales_report.xlsx");
+        });
+    </script>
+    
+{% endblock %}

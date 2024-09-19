@@ -1,6 +1,24 @@
 {% extends 'user/base.html' %}
 {% load static %}
 {% block content %}
+
+<style>
+  @font-face {
+      font-family: 'myfont';
+      src: url("{% static 'assets/fonts/font.TTF' %}");
+  }
+  h1{
+      font-family:myfont;
+      
+      
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), /* White glow */
+                   {% comment %} 0 0 20px rgba(255, 255, 255, 0.6), {% endcomment %}
+                   0 0 30px rgba(255, 255, 255, 0.4); 
+
+  }
+</style>
+
+
     
     <!--Body Content-->
     <div id="page-content">
@@ -8,7 +26,7 @@
     	<div class="collection-header">
 			<div class="collection-hero">
         		<div class="collection-hero__image"><img class="blur-up lazyload" data-src="{% static 'assets/images/drip/girl.gif' %}"  alt="Women" title="Women" /></div>
-        		<div class="collection-hero__title-wrapper"><h1 class="collection-hero__title page-width" style="font-family: Arial, sans-serif; font-weight: bold; font-size: 3em;" >Shop Your DRIP </h1></div>
+        		<div class="collection-hero__title-wrapper"><h1 class="collection-hero__title page-width" style="font-family: myfont, sans-serif; font-weight: bold; font-size: 3em;" >Shop Your DRIP </h1></div>
       		</div>
 		</div>
         <!--End Collection Banner-->

@@ -1,0 +1,245 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block content %}
+<section class="content-main">
+    <div class="content-header mb-4">
+        <h2 class="content-title">Returned Orders</h2>
+    </div>
+
+    <div class="card shadow-sm">
+        <header class="card-header bg-light">
+            <div class="row align-items-center">
+                <div class="col-lg-4 col-md-6 me-auto">
+                    <form method="get" action="" class="input-group">
+                        <input type="text" name="search" value="{{ search_query }}" placeholder="Search..." class="form-control">
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="material-icons md-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <select name="items_per_page" class="form-select" onchange="this.form.submit()">
+                        <option value="20" {% if items_per_page == '20' %}selected{% endif %}>Show 20</option>
+                        <option value="30" {% if items_per_page == '30' %}selected{% endif %}>Show 30</option>
+                        <option value="40" {% if items_per_page == '40' %}selected{% endif %}>Show 40</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#ID</th>
+                            <th>Name</th>
+                            <th>Order ID</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                            <th>Return Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in return_requests %}
+                        <tr>
+                            <td>{{ item.id }}</td>
+                            <td><strong>{{ item.order_main.address.name }}</strong></td>
+                            <td>{{ item.order_main.order_id }}</td>
+                            <td>${{ item.order_main.final_amount }}</td>
+                            <td>{{ item.order_main.date }}</td>
+                            <td>
+
+                                <span class="badge {% if item.status == 'Pending' %} bg-warning{% else %} bg-success{% endif %}">{{ item.status }}</span>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-dark toggle-details" data-target="details-{{ item.id }}">
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr class="details-row" id="details-{{ item.id }}" style="display: none;">
+                            <td colspan="7">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Return Request Details</h5>
+                                        <!-- Filter return requests for the specific item -->
+                                        {% for return_request in return_requests %}
+                                            {% if return_request.id == item.id %}
+                                            <div class="mb-3 p-3 border rounded">
+                                                <p class="card-text"><strong>Type:</strong>
+                                                    {% if return_request.order_sub %}
+                                                    Individual Product Return
+                                                    {% else %}
+                                                    Full Order Return
+                                                    {% endif %}
+                                                </p>
+                                                {% if return_request.order_sub %}
+                                                <p class="card-text"><strong>Product:</strong> {{ return_request.order_sub.variant.product }}</p>
+                                                <p class="card-text"><strong>Quantity:</strong> {{ return_request.order_sub.quantity }}</p>
+                                                {% endif %}
+                                                <p class="card-text"><strong>Reason:</strong> {{ return_request.reason }}</p>
+                                                <p class="card-text"><strong>Status:</strong>
+                                                    <span class="badge {% if return_request.status == 'Approved' %}bg-success{% elif return_request.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                        {{ return_request.status }}
+                                                    </span>
+                                                </p>
+                                                {% if return_request.status == 'Pending' %}
+                                                <form id="returnForm_{{ return_request.id }}" method="post" action="{% url 'order:admin_return_approval' return_request.id %}" class="mt-3">
+                                                    {% csrf_token %}
+                                                    <button type="submit" id="approveButton_{{ return_request.id }}" name="action" value="Approve" class="btn btn-success btn-sm me-2">Approve</button>
+                                                    <button type="submit" id="rejectButton_{{ return_request.id }}" name="action" value="Reject" class="btn btn-danger btn-sm">Reject</button>
+                                                </form>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">No returned orders found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+                {% if return_requests.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ return_requests.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                            <i class="material-icons md-chevron_left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in return_requests.paginator.page_range %}
+                    {% if return_requests.number == num %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if return_requests.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ return_requests.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                            <i class="material-icons md-chevron_right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+</section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Approve and Reject buttons
+        const buttons = document.querySelectorAll('button[name="action"]');
+    
+        buttons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the form from submitting immediately
+    
+                const form = this.closest('form'); // Get the closest form element
+    
+                // Determine the action type based on the button clicked
+                const actionType = this.value === 'Approve' ? 'Approve' : 'Reject';
+                const confirmText = actionType === 'Approve' 
+                    ? "Do you really want to approve this return request?" 
+                    : "Do you really want to reject this return request?";
+    
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: confirmText,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: `Yes, ${actionType} it!`,
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const actionInput = document.createElement('input');
+                        actionInput.type = 'hidden';
+                        actionInput.name = 'action';
+                        actionInput.value = this.value;
+                        form.appendChild(actionInput); // Append the hidden input to the form
+    
+                        form.submit(); // Submit the form
+                    }
+                });
+            });
+        });
+    });
+    
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // SweetAlert2 notifications
+        {% if messages %}
+        const messages = [
+            {% for message in messages %}
+            {
+                type: "{{ message.tags }}",
+                text: "{{ message }}"
+            },
+            {% endfor %}
+        ];
+        messages.forEach(message => {
+            Swal.fire({
+                toast: true,
+                position: 'top-right',
+                icon: message.type === 'error' ? 'error' : 'success',
+                title: message.text,
+                showConfirmButton: false,
+                timer: 3000,
+                background: message.type === 'error' ? '#f8d7da' : '',
+                color: message.type === 'error' ? '#721c24' : ''
+            });
+        });
+        {% endif %}
+
+        // Toggle details visibility
+        const toggleButtons = document.querySelectorAll('.toggle-details');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const targetRow = document.getElementById(targetId);
+                if (targetRow.style.display === 'none') {
+                    // Hide other details rows
+                    document.querySelectorAll('.details-row').forEach(row => {
+                        if (row.id !== targetId) {
+                            row.style.display = 'none';
+                            document.querySelector(`button[data-target="${row.id}"]`).textContent = 'View Details';
+                        }
+                    });
+                    targetRow.style.display = 'table-row';
+                    this.textContent = 'Hide Details';
+                } else {
+                    targetRow.style.display = 'none';
+                    this.textContent = 'View Details';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

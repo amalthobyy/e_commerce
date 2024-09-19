@@ -14,11 +14,24 @@ from .models import *
 
 @login_required(login_url='/login/')
 def user_profile(request):
+    user = request.user
     orders= OrderMain.objects.filter(user=request.user.id).order_by('-updated_at')
+    order_sub = OrderSub.objects.filter(user=request.user.id)
     user_address = UserAddress.objects.filter(user=request.user,is_deleted=False).order_by('-status')
-    return render(request, 'user_dash/demo.html',{ 'user_address': user_address ,'orders':orders})
+    balance = 0  
+    wallets = None 
+    try:
+        wallets = Wallet.objects.get(user=user)
+        balance = wallets.balance
+    except Wallet.DoesNotExist:
+        pass  
+    
+    transactions = Transaction.objects.filter(wallet=wallets)
 
+    return render(request, 'user_dash/demo.html',{ 'user_address': user_address ,'orders':orders,'balance': balance,
+                                                  'transactions':transactions,'wallets':wallets, 'order_sub':order_sub,})
 
+@login_required
 def add_address(request):
     user_addresses = UserAddress.objects.filter(user=request.user).order_by('-status', 'id')
     context = {
@@ -60,7 +73,7 @@ def add_address(request):
         messages.success(request, 'Address added successfully.')
         return redirect('userdash:add-address')
 
-
+@login_required
 def changepass(request):
     if request.method =='POST':
         user = User.objects.get(id=request.user.id)
@@ -79,7 +92,7 @@ def changepass(request):
 
     return render(request, 'user_dash/demo.html')
 
-
+@login_required
 def edituser(request):
     if request.method=="POST":
         user = User.objects.get(id=request.user.id)
@@ -100,7 +113,7 @@ def default(request,pk):
 
         return redirect('userdash:user-profile')  
 
-
+@login_required
 def delete(request,pk):
     address= UserAddress.objects.get(id=pk,user=request.user)
     address.is_deleted=True
@@ -304,7 +317,7 @@ def search(request):
     return JsonResponse(data)
 
 
-
+@login_required
 def add_to_wishlist(request):
     if request.method == "POST":
         variant_id = request.POST.get('variant_id')
@@ -326,7 +339,7 @@ def add_to_wishlist(request):
     print("Invalid request method")
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-
+@login_required
 def wishlist(request):
     user= User.objects.get(id=request.user.id)
     wishlists =Wishlist.objects.filter(user=user)
@@ -394,3 +407,13 @@ def wishlist_add_to_cart(request):
 
 
 
+
+
+def user_invoice(request, pk):
+    order_main = get_object_or_404(OrderMain, id=pk)
+    order_sub = OrderSub.objects.filter(main_order=order_main, is_active=True)
+    
+    return render(request, 'user_dash/user_invoice.html', {
+        'order_main': order_main,
+        'order_sub': order_sub
+    })

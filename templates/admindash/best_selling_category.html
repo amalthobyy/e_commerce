@@ -1,0 +1,66 @@
+{% extends 'admindash/base_admin.html' %}
+{% load static %}
+{% block content %}
+
+<section class="content-main">
+    
+    
+    <div class="card mb-4 shadow-sm border-0">
+        <header class="card-header bg-dark text-white">
+            <h4 class="card-title mb-0 text-center" ><span style="color:white;">Top Selling  Category</span></h4>
+        </header>
+        
+        <div class="card-body bg-light">
+            <div class="row gx-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5">
+                
+                {% if top_category %}
+                    <div class="col">
+                        <div class="card card-product-grid shadow-sm border-0 h-80 bg-dark text-white">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div class="info-wrap text-center">
+                                    <a href="#" class="title text-truncate text-uppercase fw-bold text-white d-block mb-2">
+                                        {{ top_category.variant__product__product_category__category_name }}
+                                    </a>
+                                    <span class="badge bg-light text-dark mb-2">Top Seller</span>
+                                    <div class="price mb-2">
+                                        Total Sold: {{ top_category.total_sold }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- card-product end// -->
+                    </div> <!-- col.// -->
+                {% endif %}
+
+                {% for category in best_selling_categories %}
+                <div class="col">
+                    <div class="card card-product-grid shadow-sm border-0 h-90 bg-dark text-white">
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div class="info-wrap text-center">
+                                <a href="#" class="title text-truncate text-uppercase fw-bold text-white d-block mb-2">
+                                    {{ category.variant__product__product_category__category_name }}
+                                </a>
+                                <div class="price mb-2">
+                                    Total Sold: {{ category.total_sold }}
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- card-product end// -->
+                </div> <!-- col.// -->
+                {% endfor %}
+                
+                {% if not top_category and not best_selling_categories %}
+                <div class="col-12">
+                    <div class="alert alert-dark text-center" role="alert">
+                        No top categories available at the moment.
+                    </div>
+                </div>
+                {% endif %}
+                
+            </div> <!-- row.// -->
+        </div> <!-- card-body end// -->
+        
+    </div> <!-- card end// -->
+
+</section> <!-- content-main end// -->
+
+{% endblock %}

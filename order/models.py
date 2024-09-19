@@ -21,6 +21,8 @@ class OrderMain(models.Model):
     user = models.ForeignKey(User,  on_delete=models.SET_NULL, null=True)
     address = models.ForeignKey(OrderAddress, on_delete=models.SET_NULL, null=True)
     total_amount = models.FloatField(null=False)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0) 
+    final_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     date = models.DateField(auto_now_add=True)
     order_status = models.CharField( max_length=100, default="Order Placed")
     payment_option = models.CharField(max_length=100, default="Cash_on_delivery")
@@ -45,7 +47,21 @@ class OrderSub(models.Model):
     
     def total_cost(self):
        return self.quantity * self.price
+    def final_total_cost(self):
+        return self.quantity * self.price
 
-    
+
+class ReturnRequest(models.Model):
+    RETURN_STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+    order_main = models.ForeignKey(OrderMain, on_delete=models.CASCADE, null=True,blank=True)
+    order_sub = models.ForeignKey(OrderSub, on_delete=models.CASCADE, null=True, blank=True)
+    reason = models.TextField()
+    status = models.CharField(max_length=10, choices=RETURN_STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)   
    
  

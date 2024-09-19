@@ -39,6 +39,7 @@
         height: 100px;
         overflow: hidden;
         position: relative;
+      
       }
 
       .logo img {
@@ -46,6 +47,7 @@
         top: -15px;
         height: 130px;
         width: auto;
+       
       }
       .search-result-item {
         display: flex;
@@ -143,7 +145,7 @@
             <div class="logo nav-logo col-md-2 col-lg-2 d-none d-lg-block">
               <a href="{% url 'accounts:home' %}">
                 <img
-                  src="{% static 'assets/images/drip/mainlogodrip.svg' %}"
+                  src="{% static 'assets/images/drip/bgrem.png' %}"
                   alt="Belle Multipurpose Html Template"
                   title="Belle Multipurpose Html Template"
                 />
@@ -176,12 +178,12 @@
                   </li>
 
                   <li class="lvl1 parent dropdown">
-                    <a href="#"
+                    <a href="{% url 'accounts:about_us'%}"
                       >About us <i class="anm anm-angle-down-l"></i
                     ></a>
                   </li>
                   <li class="lvl1 parent dropdown">
-                    <a href="#"
+                    <a href="{% url 'accounts:contact_us'%}"
                       >Contact us <i class="anm anm-angle-down-l"></i
                     ></a>
                   </li>
@@ -196,7 +198,7 @@
               <div class="logo">
                 <a href="{% url 'accounts:home'%}">
                   <img
-                    src="{% static 'assets/images/drip/mainlogodrip.svg' %}"
+                    src="{% static 'assets/images/drip/bgrem.png' %}"
                     alt="Belle Multipurpose Html Template"
                     title="Belle Multipurpose Html Template"
                   />
@@ -250,7 +252,7 @@
                   <div class="display-table-cell footer-newsletter">
                     <div class="section-header text-center">
                       <label class="h2"
-                        ><span>sign up for </span>newsletter</label
+                        ><span>sign up for </span>Dripc4rtel</label
                       >
                     </div>
                     <form action="#" method="post">
@@ -370,10 +372,10 @@
                 <div class="col-12 col-sm-12 col-md-3 col-lg-3 footer-links">
                   <h4 class="h4">Quick Shop</h4>
                   <ul>
-                    <li><a href="#">Men</a></li>
-                    <li><a href="#"></a></li>
+                    <li><a href="#">sneakers</a></li>
+                    <li><a href="#">Casuals</a></li>
                     <li><a href="#">Sportswear</a></li>
-                    <li><a href="#">Sale</a></li>
+                  
                   </ul>
                 </div>
                 <div class="col-12 col-sm-12 col-md-3 col-lg-3 footer-links">

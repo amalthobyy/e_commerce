@@ -263,7 +263,7 @@
                                                                 {{ order.address.state}}<br>
                                                                 {{ order.address.pin_number}} 
                                                             </td> 
-                                                            <td>₹{{ order.total_amount }}</td> 
+                                                            <td>₹{{ order.final_amount }}</td> 
                                                             <td> 
                                                                 {{ order.date }}<br>
                                                             </td>
@@ -281,11 +281,11 @@
                                                                 </div>
                                                                 <div style="margin-top:10px;">
                                                                     {% if order.order_status == "Order Placed" %}
-                                                                    <form id="return-order-form" method="post" action="">
+                                                                    <form id="return-order-form" method="post" action="{% url 'order:return_order' order.id %}">
                                                                         {% csrf_token %}
-                                                                        {% comment %} <button type="submit" class="badge bg-danger no-outline" style="height: 25px; width: 100px; padding: 0; text-align: center; display: flex; align-items: center; justify-content: center;">
+                                                                        <button type="submit" class="badge bg-danger no-outline" style="height: 25px; width: 100px; padding: 0; text-align: center; display: flex; align-items: center; justify-content: center;">
                                                                             Return Order
-                                                                        </button> {% endcomment %}
+                                                                        </button> 
                                                                     </form>
                                                                     {% endif %}
                                                                 </div>
@@ -295,6 +295,9 @@
                                                                         Details
                                                                     </button>
                                                                 </div>
+                                                                {% if order.order_status == "Order Placed" %}
+                                                                <a href="{% url 'userdash:user_invoice' order.id %}" class="btn btn-sm" style="display: block; width: 100%; margin: 2px 0; padding: 6px 2px; font-size: 11px; line-height: 1.5; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; cursor: pointer; border: 1px solid #000; border-radius: 3px; text-decoration: none; color: #fff; background-color: #000;">INVOICE DOWNLOAD</a>
+                                                                {% endif %}
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -315,14 +318,41 @@
                                                                                             Size: {{ item.variant.size }}<br>
                                                                                             Price: ₹{{ item.price }}
                                                                                         </p>
-                                                                                    </div>
-                                                                                    <div class="col-md-6">
-                                                                                        <h5 class="card-title">Delivery Address</h5>
+                                                                                        {% if item.is_active and item.main_order.is_active %}
+                                                                                        {% if item.status != "Return Requested" and item.status != "Canceled" and item.status != "Returned" %}
+                                                                                            {% if item.main_order.order_status == "Order Placed" %}
+                                                                                                <form   class="item-return-form" method="post" action="{% url 'order:individual_return' item.id %}">
+                                                                                                    {% csrf_token %}
+                                                                                                    {% comment %} <button type="submit" class="btn btn-danger btn-sm collapse-btn">Return</button> {% endcomment %}
+                                                                                                </form>
+                                                                                            {% else %}
+                                                                                                <form class="item-cancel-form" method="post" action="{% url 'order:individual_cancel' item.id %}">
+                                                                                                    {% csrf_token %}
+                                                                                                    <button type="submit" class="btn btn-danger btn-sm collapse-btn">Cancel</button>
+                                                                                                </form>
+                                                                                            {% endif %}
+                                                                                        {% else %}
+                                                                                            <span class="badge badge-warning px-2 py-1">
+                                                                                                {{ item.status }}
+                                                                                            </span>
+                                                                                        {% endif %}
+                                                                                    {% else %}
+                                                                                        <span class="badge {% if item.transaction_type == 'Credited' %}badge-success{% else %}badge-danger{% endif %} px-2 py-1">
+                                                                                            {% if item.status %}
+                                                                                            {{ item.status }}
+                                                                                            {% else %}
+                                                                                            {{ item.main_order.order_status }}
+                                                                                            {% endif %}
+                                                                                        </span>
+                                                                                    {% endif %}
+
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <h5 class="card-title">Delivery Address</h5>
                                                                                         <p class="card-text">
                                                                                             Name:{{ item.main_order.address.name }}<br>
                                                                                             House Name: {{ item.main_order.address.house_name }}<br>
-                                                                                            Size: {{ item.variant.size }}<br>
-                                                                                            Price: ₹{{ item.price }}<br>
+                                               
                                                                                             
                                                                                         </p>
                                                                                     </div>
@@ -372,7 +402,7 @@
                                                             <td class="font-weight-bold {% if item.transaction_type == 'Credited' %}text-success{% else %}text-danger{% endif %}">
                                                                 ₹{{ item.amount }}
                                                             </td>
-                                                            <td>{{ item.date|date:"M d, Y" }}</td>
+                                                            <td>{{  item.wallet.updated_at  }}</td>
                                                             <td>{{ item.description }}</td>
                                                         </tr>
                                                         {% endfor %}
@@ -763,7 +793,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Return order form
     const returnForm = document.getElementById('return-order-form');
     if (returnForm) {
-        handleSweetAlert(returnForm, 'Are you sure?', 'Do you really want to Cancel this order?');
+        handleSweetAlert(returnForm, 'Are you sure?', 'Do you really want to Return this order?');
     }
 });
 

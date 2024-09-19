@@ -1,77 +1,119 @@
 {% extends 'user/base.html' %}
 {% load static %}
-{% block content %}
 
-<!--Page Title-->
-<div class="page section-header text-center">
-    <div class="page-title">
-        <div class="wrapper"><h1 class="page-width">Create an Account</h1></div>
-    </div>
-</div>
-<!--End Page Title-->
+{% block content %}
+<style>
+    .video-background {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        z-index: -1000;
+        object-fit: cover;
+    }
+    .create-account-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        margin-top: 50px;
+    }
+    .create-account-title {
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 30px;
+    }
+    .form-control {
+        border-radius: 25px;
+        margin-bottom: 15px;
+    }
+    .btn-create {
+        border-radius: 25px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        background-color: #333;
+        color: #fff;
+        padding: 10px 20px;
+    }
+    .btn-create:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .form-group label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .form-errors {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 5px;
+    }
+</style>
+
+<video autoplay muted loop class="video-background">
+    <source src="{% static 'assets/images/drip/creapdawg.mp4' %}">
+    Your browser does not support the video tag.
+</video>
 
 <div class="container">
-    <div class="row">
-        <div class="col-12 col-sm-12 col-md-6 col-lg-6 main-col offset-md-3">
-            <div class="mb-4">
-                <form method="POST" action="#" id="CustomerLoginForm" accept-charset="UTF-8" class="contact-form"> 
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-12 col-md-8 col-lg-6">
+            <div class="create-account-container">
+                <h1 class="text-center create-account-title">Create an Account</h1>
+                <form method="POST" action="#" id="CustomerLoginForm" accept-charset="UTF-8" class="contact-form">
                     {% csrf_token %}
 
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.first_name.label_tag }}
-                                {{ form.first_name }}
-                                {% for error in form.first_name.errors %}
-                                <div class="form-errors">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.last_name.label_tag }}
-                                {{ form.last_name}}
-                                {% for error in form.last_name.errors %}
-                                <div class="form-errors">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.email.label_tag }}
-                                {{ form.email }}
-                                {% for error in form.email.errors %}
-                                <div class="form-errors">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.password.label_tag }}
-                                {{ form.password }}
-                                {% for error in form.password.errors %}
-                                <div class="form-errors">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                {{ form.confirm_password.label_tag }}
-                                {{ form.confirm_password}}
-                                {% for error in form.confirm_password.errors %}
-                                <div class="form-errors">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name }}
+                        {% for error in form.first_name.errors %}
+                        <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
                     </div>
-                    <div class="row">
-                        <div class="text-center col-12">
-                            <input type="submit" class="btn mb-3" value="Create">
-                        </div>
-                        <div class="text-center col-12">
-                            <a id="RecoverPassword">Already have an account?</a> &nbsp; | &nbsp;
-                            <a href="{% url 'accounts:login' %}" style="font-weight:bold;" id="customer_register_link">Log In</a>
-                        </div>
+
+                    <div class="form-group">
+                        {{ form.last_name.label_tag }}
+                        {{ form.last_name}}
+                        {% for error in form.last_name.errors %}
+                        <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                        {% for error in form.email.errors %}
+                        <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.password.label_tag }}
+                        {{ form.password }}
+                        {% for error in form.password.errors %}
+                        <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form.confirm_password.label_tag }}
+                        {{ form.confirm_password}}
+                        {% for error in form.confirm_password.errors %}
+                        <div class="form-errors">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="text-center">
+                        <input type="submit" class="btn btn-create mb-3" value="Create Account">
+                    </div>
+
+                    <div class="text-center">
+                        <span>Already have an account?</span>
+                        <a href="{% url 'accounts:login' %}" class="font-weight-bold ml-2">Log In</a>
                     </div>
                 </form>
             </div>
