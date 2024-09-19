@@ -81,4 +81,4 @@ scripts/
 parts/
 bin/
 var/
-share/
+share/.env 
