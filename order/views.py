@@ -759,6 +759,7 @@ def handle_razorpay_payment(request):
             # Verify the payment
             payment = client.payment.fetch(razorpay_payment_id)
             if payment['status'] == 'captured':
+                final_amount = cart_total
                 # Handle coupon logic if applicable
                 coupon_code = request.session.get('applied_coupon')
                 discount = 0

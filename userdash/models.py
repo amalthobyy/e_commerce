@@ -23,7 +23,7 @@ class UserAddress(models.Model):
     class Meta:
         verbose_name = "User Address"
         verbose_name_plural = "User Addresses"
-
+  
 
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
