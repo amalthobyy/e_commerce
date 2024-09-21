@@ -24,17 +24,17 @@
                         <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200" name="order_status">
                             {% if orders.order_status == "Canceled" %}
                             <option style="color:red;">Canceled</option>
-                            {% elif orders.order_status == "Order Placed" %}
-                            <option style="color:red;">Order Placed</option>
+                            {% elif orders.order_status == "delivered" %}
+                            <option style="color:red;">delivered</option>
                             {% else %}
                             <option>Change status</option>
                             <option>Confirmed</option>
-                            <option>Order Placed</option>
+                            <option>delivered</option>
                             <option>Shipped</option>
                             <option>Canceled</option>
                             {% endif %}
                         </select>
-                        {% if orders.order_status != "Canceled" and orders.order_status != "Order Placed" %}
+                        {% if orders.order_status != "Canceled" and orders.order_status != "delivered" %}
                         <button class="btn btn-primary" type="submit">Save</button>
                         {% endif %}
                     </form>

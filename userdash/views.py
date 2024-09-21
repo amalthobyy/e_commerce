@@ -26,7 +26,7 @@ def user_profile(request):
     except Wallet.DoesNotExist:
         pass  
     
-    transactions = Transaction.objects.filter(wallet=wallets)
+    transactions = Transaction.objects.filter(wallet=wallets).order_by('-id')
 
     return render(request, 'user_dash/demo.html',{ 'user_address': user_address ,'orders':orders,'balance': balance,
                                                   'transactions':transactions,'wallets':wallets, 'order_sub':order_sub,})
@@ -316,7 +316,6 @@ def search(request):
 
     return JsonResponse(data)
 
-
 @login_required
 def add_to_wishlist(request):
     if request.method == "POST":
@@ -331,13 +330,14 @@ def add_to_wishlist(request):
             return JsonResponse({'status': 'error', 'message': 'Variant does not exist'})
 
         user = request.user
-        wishlist, created = Wishlist.objects.get_or_create(user=user,variant=variant)
+        wishlist, created = Wishlist.objects.get_or_create(user=user, variant=variant)
 
-        messages.success(request, 'Added To Wishlist') 
-        return JsonResponse({'status': 'added'})
+        # Include the success message in the JsonResponse
+        return JsonResponse({'status': 'added', 'message': 'Added to Wishlist'})
     
     print("Invalid request method")
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
 
 @login_required
 def wishlist(request):

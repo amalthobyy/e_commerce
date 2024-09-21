@@ -267,7 +267,7 @@
                                                             <td> 
                                                                 {{ order.date }}<br>
                                                             </td>
-                                                            <td><span {% if order.order_status == "Order Placed" %} class="badge bg-success" {% elif order.order_status == "Confirmed" %} class="badge bg-warning" {% elif order.order_status == "Shipped" %} class="badge bg-primary" {% else %}class="badge bg-danger" {% endif %}>{{ order.order_status }}</span></td> 
+                                                            <td><span {% if order.order_status == "delivered" %} class="badge bg-success" {% elif order.order_status == "Confirmed" %} class="badge bg-warning" {% elif order.order_status == "Shipped" %} class="badge bg-primary" {% else %}class="badge bg-danger" {% endif %}>{{ order.order_status }}</span></td> 
                                                             <td>
                                                                 <div>
                                                                     {% if order.order_status == "Confirmed" or order.order_status == "Awaiting Payment" or order.order_status == "Shipped" or order.order_status == "Paid" %}
@@ -280,7 +280,7 @@
                                                                     {% endif %}
                                                                 </div>
                                                                 <div style="margin-top:10px;">
-                                                                    {% if order.order_status == "Order Placed" %}
+                                                                    {% if order.order_status == "delivered" %}
                                                                     <form id="return-order-form" method="post" action="{% url 'order:return_order' order.id %}">
                                                                         {% csrf_token %}
                                                                         <button type="submit" class="badge bg-danger no-outline" style="height: 25px; width: 100px; padding: 0; text-align: center; display: flex; align-items: center; justify-content: center;">
@@ -295,7 +295,7 @@
                                                                         Details
                                                                     </button>
                                                                 </div>
-                                                                {% if order.order_status == "Order Placed" %}
+                                                                {% if order.order_status == "delivered" %}
                                                                 <a href="{% url 'userdash:user_invoice' order.id %}" class="btn btn-sm" style="display: block; width: 100%; margin: 2px 0; padding: 6px 2px; font-size: 11px; line-height: 1.5; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; cursor: pointer; border: 1px solid #000; border-radius: 3px; text-decoration: none; color: #fff; background-color: #000;">INVOICE DOWNLOAD</a>
                                                                 {% endif %}
                                                             </td>
@@ -320,7 +320,7 @@
                                                                                         </p>
                                                                                         {% if item.is_active and item.main_order.is_active %}
                                                                                         {% if item.status != "Return Requested" and item.status != "Canceled" and item.status != "Returned" %}
-                                                                                            {% if item.main_order.order_status == "Order Placed" %}
+                                                                                            {% if item.main_order.order_status == "delivered" %}
                                                                                                 <form   class="item-return-form" method="post" action="{% url 'order:individual_return' item.id %}">
                                                                                                     {% csrf_token %}
                                                                                                     {% comment %} <button type="submit" class="btn btn-danger btn-sm collapse-btn">Return</button> {% endcomment %}
