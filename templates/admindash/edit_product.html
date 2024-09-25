@@ -276,4 +276,32 @@
         });
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        {% if messages %}
+            const messages = [
+                {% for message in messages %}
+                    {
+                        type: "{{ message.tags }}",
+                        text: "{{ message }}"
+                    },
+                {% endfor %}
+            ];
+            messages.forEach(message => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-right',
+                    icon: message.type === 'error' ? 'error' : 'success',
+                    title: message.text,
+                    showConfirmButton: false,
+                    timer: 3000,
+                    background: message.type === 'error' ? '#f8d7da' : '',
+                    color: message.type === 'error' ? '#721c24' : ''
+                });
+            });
+        {% endif %}
+    });
+</script>
 {% endblock %}

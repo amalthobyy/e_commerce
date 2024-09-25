@@ -102,10 +102,15 @@
                             <td>
                                 <div class="d-flex justify-content-center">
                                     <a href="{% url 'brand:edit_brand' brand.id %}" class="btn btn-warning btn-sm me-2" style="padding: 5px 10px;">Edit</a>
-                                    <form method="POST" action="{% url 'brand:delete_brand' brand.id %}" style="display: inline;">
+                                    <form method="POST" action="{% url 'brand:delete_brand' brand.id %}" style="display: inline;" class="brand-action-form">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-{% if brand.is_active %}danger{% else %}success{% endif %} btn-sm" style="padding: 5px 10px;" >{% if brand.is_active %}Delete{% else %}Restore{% endif %}</button>
+                                        <button type="button" class="btn btn-{% if brand.is_active %}danger{% else %}success{% endif %} btn-sm"
+                                                style="padding: 5px 10px;" 
+                                                onclick="confirmBrandAction(this.form, '{% if brand.is_active %}Are you sure you want to delete this brand?{% else %}Are you sure you want to restore this brand?{% endif %}')">
+                                            {% if brand.is_active %}Delete{% else %}Restore{% endif %}
+                                        </button>
                                     </form>
+                                    
                                     
                                 </div>
                             </td>
@@ -130,24 +135,53 @@
         </nav>
     </div>
 </section> 
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function confirmStatusChange(event) {
-        event.preventDefault();
-        const form = event.target.closest('form');
+    function confirmBrandAction(form, message) {
+        // SweetAlert confirmation
         Swal.fire({
             title: 'Are you sure?',
-            text: 'You are about to change the status.',
+            text: message,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, do it!'
+            confirmButtonText: 'Yes, proceed!'
         }).then((result) => {
             if (result.isConfirmed) {
+                // Submit the form if confirmed
                 form.submit();
             }
         });
     }
+    
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        {% if messages %}
+            const messages = [
+                {% for message in messages %}
+                    {
+                        type: "{{ message.tags }}",
+                        text: "{{ message }}"
+                    },
+                {% endfor %}
+            ];
+            messages.forEach(message => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-right',
+                    icon: message.type === 'error' ? 'error' : 'success',
+                    title: message.text,
+                    showConfirmButton: false,
+                    timer: 3000,
+                    background: message.type === 'error' ? '#f8d7da' : '',
+                    color: message.type === 'error' ? '#721c24' : ''
+                });
+            });
+        {% endif %}
+    });
+</script>
+
 {% endblock content %}

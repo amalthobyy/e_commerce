@@ -188,7 +188,7 @@ def edit_variant(request, variant_id):
         variant.variant_stock = request.POST.get('variant_stock')
         variant.variant_status = request.POST.get('variant_status') == 'on'
 
-      
+        messages.success(request,'variant edited successfully')
         variant.save()
         return redirect('product:variant-detail', variant.product.id)
     
@@ -244,10 +244,11 @@ def shop_page(request):
         products = Products.objects.all()
     
     count = products.count()
+    latest_products = Products.objects.all().order_by('-id')
 
     categories = Category.objects.all()
     brands = Brand.objects.all()
-    return render(request, 'user/product/shop_page.html',{'products':products, 'categories':categories, 'brands':brands,'count':count})
+    return render(request, 'user/product/shop_page.html',{'products':products, 'categories':categories, 'brands':brands,'count':count, 'latest_products':latest_products})
 
 
 

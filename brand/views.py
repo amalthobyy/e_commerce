@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.utils.decorators import method_decorator
 from .models import Brand
+from django.contrib import messages
 
 
 # Create your views here.
@@ -41,7 +42,7 @@ class EditBrand(View):
         brand.is_active = request.POST.get('status')
 
         brand.save()
-
+        messages.success(request,'Brand edited succesfuly')
         return redirect('brand:list_brand')
 
 

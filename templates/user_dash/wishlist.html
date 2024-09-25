@@ -50,7 +50,7 @@
         <div class="wishlist-item">
             <img src="{{ wishlist.variant.product.thumbnail.url }}" alt="{{ wishlist.variant.product.product_name }}">
             <div class="product-info">
-                <h5 style="padding-bottom:5px;">{{ wishlist.variant.product.product_brand }}</h5>
+                {% comment %} <h5 style="padding-bottom:5px;">{{ wishlist.variant.product.product_brand }}</h5> {% endcomment %}
                 <h4><a href="">{{ wishlist.variant.product.product_name }}</a></h4>
                 <p>Size: {{ wishlist.variant.size }}</p>
                 <p>Category: {{ wishlist.variant.product.product_category }}</p>

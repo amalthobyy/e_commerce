@@ -136,19 +136,18 @@
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
         
         <script>
+            // Register plugin for data labels
             Chart.register(ChartDataLabels);
         
+            // Get the context for orderChart
             const orderCtx = document.getElementById('orderChart').getContext('2d');
-            const userCtx = document.getElementById('userChart').getContext('2d');
         
+            // Create gradient for order chart
             const orderGradient = orderCtx.createLinearGradient(0, 0, 0, 400);
             orderGradient.addColorStop(0, 'rgba(54, 162, 235, 0.8)');
             orderGradient.addColorStop(1, 'rgba(54, 162, 235, 0.1)');
         
-            const userGradient = userCtx.createLinearGradient(0, 0, 0, 400);
-            userGradient.addColorStop(0, 'rgba(255, 99, 132, 0.8)');
-            userGradient.addColorStop(1, 'rgba(255, 99, 132, 0.1)');
-        
+            // Common options for both charts
             const commonOptions = {
                 responsive: true,
                 plugins: {
@@ -188,7 +187,8 @@
                     easing: 'easeInOutSine',
                 },
             };
-
+        
+            // Generate random wave data for the chart
             function generateWaveData(length) {
                 const data = [];
                 const frequency = 0.1;
@@ -198,14 +198,15 @@
                 }
                 return data;
             }
-
+        
+            // Initialize order chart
             new Chart(orderCtx, {
                 type: 'line',
                 data: {
-                    labels: {{ labels|safe }},
+                    labels: {{ labels|safe }},  // Make sure `labels` is passed correctly from the backend
                     datasets: [{
                         label: 'Number of Orders',
-                        data: generateWaveData({{ labels|length }}),
+                        data: generateWaveData({{ labels|length }}),  // Adjust for correct data length
                         backgroundColor: orderGradient,
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 3,
@@ -237,41 +238,6 @@
                     },
                 }
             });
-        
-            new Chart(userCtx, {
-                type: 'bar',
-                data: {
-                    labels: {{ user_labels|safe }},
-                    datasets: [{
-                        label: 'New User Registrations',
-                        data: generateWaveData({{ user_labels|length }}),
-                        backgroundColor: userGradient,
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 2,
-                        borderRadius: 5,
-                        borderSkipped: false,
-                        barThickness: 20,
-                        maxBarThickness: 30,
-                    }]
-                },
-                options: {
-                    ...commonOptions,
-                    plugins: {
-                        ...commonOptions.plugins,
-                        title: {
-                            display: true,
-                            text: 'Monthly User Registrations',
-                            font: {
-                                size: 18,
-                                weight: 'bold',
-                            },
-                            padding: {
-                                top: 10,
-                                bottom: 20,
-                            },
-                        },
-                    },
-                },
-            });
         </script>
+          
 {% endblock %}

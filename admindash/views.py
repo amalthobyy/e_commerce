@@ -38,8 +38,59 @@ def admin_login(request):
 
 @admin_required
 def admin_home(request):
-   
-    return render(request,'admindash/admin_dash.html')
+    # Total order amount
+        total_order_amount = OrderMain.objects.filter(order_status="Order Placed").aggregate(total=Sum('total_amount'))['total'] or 0
+        
+        # Total order count
+        total_order_count = OrderMain.objects.filter(order_status="Order Placed").aggregate(total_orders=Count('id'))['total_orders'] or 0
+        
+        # Total discount
+        total_discount = OrderMain.objects.filter(order_status="Order Placed").aggregate(
+            total_discount=Sum(F('discount_amount'))
+        )['total_discount'] or 0
+        
+        # Monthly earnings
+        now = timezone.now()
+        current_year = now.year
+        current_month = now.month
+        
+        monthly_earnings = OrderMain.objects.filter(
+            order_status="Order Placed",
+            date__year=current_year,
+            date__month=current_month
+        ).aggregate(monthly_total=Sum('total_amount'))['monthly_total'] or 0
+
+        # Data for the order chart
+        monthly_order_count = OrderMain.objects.filter(
+            order_status="Order Placed"
+        ).annotate(
+            month=ExtractMonth('date'),
+            year=ExtractYear('date')
+        ).values('year', 'month').annotate(count=Count('id')).order_by('year', 'month')
+
+        labels = [f'{entry["month"]}/{entry["year"]}' for entry in monthly_order_count]
+        data = [entry['count'] for entry in monthly_order_count]
+
+        # User registration data
+        user_registrations = User.objects.annotate(
+            month=TruncMonth('date_joined')
+        ).values('month').annotate(count=Count('id')).order_by('month')
+
+        user_labels = [entry['month'].strftime('%b %Y') for entry in user_registrations]
+        user_data = [entry['count'] for entry in user_registrations]
+
+        context = {
+            'total_order_amount': total_order_amount,
+            'total_order_count': total_order_count,
+            'total_discount': total_discount,
+            'monthly_earnings': monthly_earnings,
+            'labels': json.dumps(labels),
+            'data': json.dumps(data),
+            'user_labels': json.dumps(user_labels),
+            'user_data': json.dumps(user_data)
+        }
+        
+        return render(request,'admindash/admin_dash.html',context)
 
 
 def sales_report(request):

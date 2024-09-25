@@ -15,6 +15,7 @@
     
     
 </style>
+
 <div class="mobile-nav-wrapper" role="navigation">
     <div class="closemobileMenu"><i class="icon anm anm-times-l pull-right"></i> Close Menu</div>
     <ul id="MobileNav" class="mobile-nav">
@@ -92,11 +93,11 @@
                     <div class="col-12 item grid-view-item style2">
                         <div class="grid-view_image">
                             <!-- start product image -->
-                            <a href="product-layout-2.html" class="grid-view-item__link">
+                            <a href="{% url 'product:product-detailsuser' product.id %}" class="grid-view-item__link">
                                 <!-- image -->
                                 <img class="grid-view-item__image primary blur-up lazyload" data-src="{{ product.thumbnail.url }}" src="{% static 'assets/images/product-images/home7-product1.jpg' %}" alt="image" title="product">
                                 <!-- End image -->
-                                <!-- Hover image -->\
+                                <!-- Hover image -->
                                 {% if product.thumbnail_hover %}
                                 <img class="grid-view-item__image hover blur-up lazyload" data-src="{{ product.thumbnail_hover.url }}" src="{% static 'assets/images/product-images/home7-product1-1.jpg' %}" alt="image" title="product">
                                 {% endif %}
@@ -107,7 +108,7 @@
                             <div class="product-details hoverDetails text-center mobile">
                                 <!-- product name -->
                                 <div class="product-name">
-                                    <a href="product-layout-2.html">{{ product.product_name }}</a>
+                                    <a href="{% url 'product:product-detailsuser' product.id %}">{{ product.product_name }}</a>
                                 </div>
                                 <!-- End product name -->
                                 <!-- product price -->
@@ -117,27 +118,7 @@
                                 </div>
                                 <!-- End product price -->
                                 
-                                <!-- product button -->
-                                <div class="button-set">
-                                    <a href="javascript:void(0)" title="Quick View" class="quick-view-popup quick-view" data-toggle="modal" data-target="#content_quickview">
-                                        <i class="icon anm anm-search-plus-r"></i>
-                                    </a>
-                                    <!-- Start product button -->
-                                    <form class="variants add" action="#" onclick="window.location.href='cart.html'"method="post">
-                                        <button class="btn cartIcon btn-addto-cart" type="button" tabindex="0"><i class="icon anm anm-bag-l"></i></button>
-                                    </form>
-                                    <div class="wishlist-btn">
-                                        <a class="wishlist add-to-wishlist" href="wishlist.html">
-                                            <i class="icon anm anm-heart-l"></i>
-                                        </a>
-                                    </div>
-                                    <div class="compare-btn">
-                                        <a class="compare add-to-compare" href="compare.html" title="Add to Compare">
-                                            <i class="icon anm anm-random-r"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- end product button -->
+                               
                             </div>
                             <!-- End product details -->
                         </div>
@@ -181,36 +162,42 @@
                 <div class="col-12 col-sm-4 col-md-4 col-lg-4">
                     <div class="custom-text text-center">
                         <h4 class="h3">
-                            <a href="#">Warm layers, fall colors and trendy styles are here for fall!</a>   
+                            <a href="{% url 'product:shop-page'%}">Warm layers, fall colors and trendy styles are here for fall!</a>   
                         </h4>
                         <div class="rte-setting"><p>UP TO 60% OFF </p></div>
-                        <a class="btn" href="#">Shop Women's</a>
+                        <a class="btn" href="{% url 'product:shop-page'%}">Shop now</a>
                     </div>
                 </div>
                 <div class="col-12 col-sm-4 col-md-4 col-lg-4">
                     <div class="custom-text text-center">
-                        <img class="blur-up lazyload" data-src="{% static 'assets/images/collection/shoes-collection1.jpg' %}" src="{% static 'assets/images/collection/shoes-collection1.jpg' %}" alt="" title="">
+                        <video class="blur-up lazyload" autoplay loop muted playsinline style="width: 100%; height: auto;">
+                            <source src="{% static 'assets/images/drip/homevid1.mp4' %}" type="video/mp4">
+                           
+                        </video>
                     </div>
                 </div>
                 <div class="col-12 col-sm-4 col-md-4 col-lg-4">
                     <div class="custom-text text-center">
-                        <img class="blur-up lazyload" data-src="{% static 'assets/images/collection/shoes-collection2.jpg' %}" src="{% static 'assets/images/collection/shoes-collection2.jpg' %}" alt="" title="">
+                        <video class="blur-up lazyload" autoplay loop muted playsinline style="width: 100%; height: auto;">
+                            <source src="{% static 'assets/images/drip/homevid2.mp4' %}" type="video/mp4">
+                           
+                        </video>
                     </div>
                 </div>
             </div>
             <div class="row align-items-center">
                 <div class="col-12 col-sm-8 col-md-8 col-lg-8">
                     <div class="custom-text text-center">
-                        <img class="blur-up lazyload" data-src="{% static 'assets/images/collection/shoes-collection3.jpg' %}" src="{% static 'assets/images/collection/shoes-collection3.jpg' %}" alt="" title="">
+                        <img class="blur-up lazyload" data-src="{% static 'assets/images/drip/posteyy.jpg' %}" src="{% static 'assets/images/drip/posteyy.jpg' %}" alt="" title="">
                     </div>
                 </div>
                 <div class="col-12 col-sm-4 col-md-4 col-lg-4">
                     <div class="custom-text text-center">
                         <h4 class="h3">
-                            <a href="#">Stay warm and look cool in fall styles for guys!</a>   
+                            <a href="{% url 'product:shop-page'%}">Stay warm and look cool in fall styles for guys!</a>   
                         </h4>
-                        <div class="rte-setting"><p>Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, velit...</p></div>
-                        <a class="btn" href="#">Shop Women's</a>
+                        {% comment %} <div class="rte-setting"><p>Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, velit...</p></div> {% endcomment %}
+                        <a class="btn" href="{% url 'product:shop-page'%}">Shop Now</a>
                     </div>
                 </div>
             </div>
@@ -219,7 +206,7 @@
     <!--End Trendy Collection-->
     
     <!--Three Column Products-->
-    <div class="section three-column-pro">
+    {% comment %} <div class="section three-column-pro">
         <div class="container">
             <div class="row">
                 <div class="col-12 col-sm-6 col-md-4 col-lg-4">
@@ -329,7 +316,7 @@
                 </div>
             </div>
         </div>
-    </div>    
+    </div>     {% endcomment %}
     <!--End Three Column Products-->
     
 </div><!--End Body Content-->

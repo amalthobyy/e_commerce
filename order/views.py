@@ -108,6 +108,7 @@ def orderverification(request):
                         if discount_amount > discount:
                             discount_amount = discount
                         final_amount -= discount_amount
+
                     except Coupon.DoesNotExist:
                         pass
                             
@@ -164,6 +165,19 @@ def orderverification(request):
                 wallet.save()
                 
                 cart_items.delete()
+
+                if coupon_code:
+                    try:
+                        coupon = Coupon.objects.get(coupon_code=coupon_code)
+                        used_coupon = UserCoupon.objects.create(
+                            user = request.user,
+                            coupon = coupon,
+                            used = True,
+                            order = order_main
+                        )
+
+                    except Coupon.DoesNotExist:
+                        pass
                 
                 request.session['order_id'] = order_main.order_id
                 request.session['order_date'] = order_main.date.strftime("%Y-%m-%d")
@@ -198,6 +212,23 @@ def orderverification(request):
             formatted_date_time = current_date_time.strftime("%m%Y%H%S")
             unique = get_random_string(length=2, allowed_chars='1234567890')
             payment_id = unique + user + formatted_date_time
+
+            coupon_code = request.session.get('applied_coupon', None)
+            discount = 0
+            final_amount = new_total
+            discount_amount = 0
+            
+            if coupon_code:
+                try:
+                    coupon = Coupon.objects.get(coupon_code=coupon_code)
+                    discount = coupon.maximum_amount
+                    discount_amount = (new_total * discount / 100)
+                    if discount_amount > discount:
+                        discount_amount = discount
+                    final_amount -= discount_amount
+
+                except Coupon.DoesNotExist:
+                    pass
 
             order_address = OrderAddress.objects.create(
                 name = address.name,
@@ -239,6 +270,20 @@ def orderverification(request):
 
             cart_items.delete()
             
+            if coupon_code:
+                    try:
+                        coupon = Coupon.objects.get(coupon_code=coupon_code)
+                        used_coupon = UserCoupon.objects.create(
+                            user = request.user,
+                            coupon = coupon,
+                            used = True,
+                            order = order_main
+                        )
+
+                    except Coupon.DoesNotExist:
+                        pass
+
+            request.session.pop('applied_coupon', None)
 
             messages.success(request, 'Order Success')        
             return redirect('order:order_success')
@@ -829,6 +874,18 @@ def handle_razorpay_payment(request):
 
                 # After all items have been processed, delete them from the cart
                 cart_items.delete()
+                if coupon_code:
+                    try:
+                        coupon = Coupon.objects.get(coupon_code=coupon_code)
+                        used_coupon = UserCoupon.objects.create(
+                            user = request.user,
+                            coupon = coupon,
+                            used = True,
+                            order = order_main
+                        )
+
+                    except Coupon.DoesNotExist:
+                        pass
                 if "applied_coupon" in request.session:
                         del request.session["applied_coupon"]
 

@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from .models import Category
 from django.contrib import messages
 from django.db import IntegrityError
-
+from django.contrib import messages
 # Create your views here.
 
 
@@ -43,6 +43,7 @@ def edit_category(request, category_id):
             category.category_name = category_name
             category.slug = slug
             category.save()
+            messages.success(request,'category edited succesfuly')
             return redirect('category:list-category')
     return render(request, 'admindash/edit_category.html', {'category': category})
 
