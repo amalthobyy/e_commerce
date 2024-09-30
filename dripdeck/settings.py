@@ -93,6 +93,7 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'accounts.middleware.CheckUserBlockedMiddleware',
     'accounts.middleware.SocialAuthExceptionMiddleware',
+    'accounts.Middleware.Custom404Middleware',
 
 ]
 

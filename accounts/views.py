@@ -250,3 +250,10 @@ def password_reset_confirm(request, uidb64, token):
 
 def password_reset_complete(request):
     return render(request, 'user/password_reset_complete.html')
+
+
+
+
+
+def custom_404_view(request, exception):
+    return render(request, 'user/404.html', status=404)
