@@ -85,10 +85,10 @@
                     <label>Phone Number <span class="required">*</span></label>
                     <input required class="form-control square" name="phone_number" >
                 </div>
-                <div class="form-check mb-3">
+                {% comment %} <div class="form-check mb-3">
                     <input type="checkbox" class="form-check-input" value="on" id="is_active" name="status" {% if users.status %}checked{% endif %}>
                     <label class="form-check-label" for="is_active">Make default</label>
-                </div>
+                </div> {% endcomment %}
                 <div class="col-md-12">
                     <button type="submit" class="btn btn-fill-out submit"  name="submit" value="Submit">Save</button>
                 </div>

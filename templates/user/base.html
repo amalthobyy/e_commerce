@@ -242,7 +242,7 @@
       {% block content %} {% endblock %}
       <!--Footer-->
       <footer id="footer">
-        <div class="newsletter-section">
+        {% comment %} <div class="newsletter-section">
           <div class="container">
             <div class="row">
               <div
@@ -363,7 +363,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> {% endcomment %}
         <div class="site-footer">
           <div class="container">
             <!--Footer Links-->
@@ -372,29 +372,28 @@
                 <div class="col-12 col-sm-12 col-md-3 col-lg-3 footer-links">
                   <h4 class="h4">Quick Shop</h4>
                   <ul>
-                    <li><a href="#">sneakers</a></li>
-                    <li><a href="#">Casuals</a></li>
-                    <li><a href="#">Sportswear</a></li>
+                    <li><a href="{% url 'product:shop-page'%}">sneakers</a></li>
+                    <li><a href="{% url 'product:shop-page'%}">Casuals</a></li>
+                    <li><a href="{% url 'product:shop-page'%}">Sportswear</a></li>
                   
                   </ul>
                 </div>
                 <div class="col-12 col-sm-12 col-md-3 col-lg-3 footer-links">
                   <h4 class="h4">Informations</h4>
                   <ul>
-                    <li><a href="#">About us</a></li>
-                    <li><a href="#">Careers</a></li>
+                    <li><a href="{% url 'accounts:about_us'%}">About us</a></li>
                     <li><a href="#">Privacy policy</a></li>
                     <li><a href="#">Terms &amp; condition</a></li>
-                    <li><a href="#">My Account</a></li>
+                    <li><a href="{% url 'userdash:user-profile' %}">My Account</a></li>
                   </ul>
                 </div>
                 <div class="col-12 col-sm-12 col-md-3 col-lg-3 footer-links">
                   <h4 class="h4">Customer Services</h4>
                   <ul>
-                    <li><a href="#">Request Personal Data</a></li>
+                    
                     <li><a href="#">FAQ's</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                    <li><a href="#">Orders and Returns</a></li>
+                    <li><a href="{% url 'accounts:contact_us'%}">Contact Us</a></li>
+                    <li><a href="{% url 'userdash:user-profile' %}">Orders and Returns</a></li>
                     <li><a href="#">Support Center</a></li>
                   </ul>
                 </div>

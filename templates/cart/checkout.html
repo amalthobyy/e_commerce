@@ -134,38 +134,40 @@
                   <div>
                       <div class="row">
                           <div class="col-lg-6" style="width: 700px">
-                              <div class="card mb-3 mb-lg-0">
-                                  {% for address in user_address %}
-                                  <div class="btn-group w-100">
-                                      <label class="btn btn-secondary w-100 address-checkbox-label">
-                                          <input
-                                              type="radio"
-                                              class="form-check-input me-2 address-checkbox"
-                                              id="{{ address.id }}"
-                                              data-address-id="{{ address.id }}"
-                                              {% if address.status %}checked{% endif %}>
-                                          {{ address.name }}
-                                      </label>
-                                      <button
-                                          class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
-                                          type="button"
-                                          id="dropdownMenuButton{{ address.id }}"
-                                          data-bs-toggle="dropdown"
-                                          aria-expanded="false">
-                                      </button>
-                                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ address.id }}">
-                                          <li><p class="dropdown-item"><strong>House Name:</strong> {{ address.house_name }}</p></li>
-                                          <li><p class="dropdown-item"><strong>Street Name:</strong> {{ address.street_name }}</p></li>
-                                          <li><p class="dropdown-item"><strong>Pin Number:</strong> {{ address.pin_number }}</p></li>
-                                          <li><p class="dropdown-item"><strong>District:</strong> {{ address.district }}</p></li>
-                                          <li><p class="dropdown-item"><strong>State:</strong> {{ address.state }}</p></li>
-                                          <li><p class="dropdown-item"><strong>Country:</strong> {{ address.country }}</p></li>
-                                      </ul>
-                                  </div>
-                                  {% empty %}
-                                  <p>No addresses found.</p>
-                                  {% endfor %}
-                              </div>
+                            <div class="card mb-3 mb-lg-0">
+                                {% for address in user_address %}
+                                <div class="btn-group w-100">
+                                    <label class="btn btn-secondary w-100 address-checkbox-label">
+                                        <input
+                                            type="radio"
+                                            name="address"  
+                                            class="form-check-input me-2 address-checkbox"
+                                            id="{{ address.id }}"
+                                            data-address-id="{{ address.id }}"
+                                            {% if address.status %}checked{% endif %}>
+                                        {{ address.name }}
+                                    </label>
+                                    <button
+                                        class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                                        type="button"
+                                        id="dropdownMenuButton{{ address.id }}"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ address.id }}">
+                                        <li><p class="dropdown-item"><strong>House Name:</strong> {{ address.house_name }}</p></li>
+                                        <li><p class="dropdown-item"><strong>Street Name:</strong> {{ address.street_name }}</p></li>
+                                        <li><p class="dropdown-item"><strong>Pin Number:</strong> {{ address.pin_number }}</p></li>
+                                        <li><p class="dropdown-item"><strong>District:</strong> {{ address.district }}</p></li>
+                                        <li><p class="dropdown-item"><strong>State:</strong> {{ address.state }}</p></li>
+                                        <li><p class="dropdown-item"><strong>Country:</strong> {{ address.country }}</p></li>
+                                    </ul>
+                                </div>
+                                {% empty %}
+                                <p>No addresses found.</p>
+                                {% endfor %}
+                            </div>
+                            
                           </div>
                           <br />
                       </div>

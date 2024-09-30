@@ -184,13 +184,12 @@
                                           <form method="get" action="{% url 'product:shop-page' %}">
                                             <select name="SortBy" id="SortBy" onchange="this.form.submit()">
                                                 <option value="title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>Sort</option>
-                                                <option value="best-selling" {% if sort_by == 'best-selling' %}selected{% endif %}>Best Selling</option>
+                
                                                 <option value="title-ascending" {% if sort_by == 'title-ascending' %}selected{% endif %}>Alphabetically, A-Z</option>
                                                 <option value="title-descending" {% if sort_by == 'title-descending' %}selected{% endif %}>Alphabetically, Z-A</option>
                                                 <option value="price-low-to-high" {% if sort_by == 'price-low-to-high' %}selected{% endif %}>Price, low to high</option>
                                                 <option value="price-high-to-low" {% if sort_by == 'price-high-to-low' %}selected{% endif %}>Price, high to low</option>
-                                                <option value="average-ratings" {% if sort_by == 'average-ratings' %}selected{% endif %}>Average ratings</option>
-                                                <option value="popularity" {% if sort_by == 'popularity' %}selected{% endif %}>Popularity</option>
+                                            
                                             </select>
                                             <noscript><button type="submit">Sort</button></noscript>
                                         </form>
