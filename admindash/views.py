@@ -108,14 +108,14 @@ def sales_report(request):
     # Filter orders based on whether a date range is defined
     if start_date and end_date:
         orders = OrderMain.objects.filter(
-            order_status="Order Placed",
+            order_status="delivered",
             is_active=True,
             date__range=[start_date, end_date]
         )
     else:
         # No specific filter, show all "Order Placed" orders
         orders = OrderMain.objects.filter(
-            order_status="Order Placed",
+            order_status="delivered",
             is_active=True
         )
 
@@ -200,7 +200,7 @@ def order_status(request,pk):
 
 def best_selling_products(request):
     best_selling_products = OrderSub.objects.filter(
-        main_order__order_status="Order Placed"
+        main_order__order_status="delivered"
     ).values(
         'variant__product__id',
         'variant__product__product_name'
@@ -218,7 +218,7 @@ def best_selling_products(request):
 
 def best_selling_categories(request):
     best_selling_categories = OrderSub.objects.filter(
-        main_order__order_status="Order Placed"
+        main_order__order_status="delivered"
     ).values(
         'variant__product__product_category__id',
         'variant__product__product_category__category_name',
@@ -237,7 +237,7 @@ def best_selling_categories(request):
 
 def best_selling_brands(request):
     best_selling_brands = OrderSub.objects.filter(
-        main_order__order_status="Order Placed"
+        main_order__order_status="delivered"
     ).values(
         'variant__product__product_brand__id',
         'variant__product__product_brand__brand_name',

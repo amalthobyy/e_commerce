@@ -647,7 +647,7 @@ def individual_cancel(request, pk):
         messages.error(request, 'Order item is already canceled.')
         return redirect('userdash:user-profile')
 
-    if order_sub.main_order.order_status not in ['Pending', 'Confirmed', 'Shipped', 'delivered']:
+    if order_sub.main_order.order_status not in ['Pending', 'Confirmed', 'Shipped', 'delivered','Paid']:
         messages.error(request, 'Order cannot be canceled at this stage.')
         return redirect('userdash:user-profile')
 
