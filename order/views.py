@@ -201,6 +201,8 @@ def orderverification(request):
 
 
     if payment_option == "Cash On Delivery":
+        cart_items = CartItem.objects.filter(cart__user=request.user, is_active=True)
+        new_total = sum(item.sub_total() for item in cart_items)
           
         if cart_total <= 6000: 
             user = str(request.user.id)
