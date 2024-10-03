@@ -39,13 +39,13 @@ def admin_login(request):
 @admin_required
 def admin_home(request):
     # Total order amount
-        total_order_amount = OrderMain.objects.filter(order_status="Order Placed").aggregate(total=Sum('total_amount'))['total'] or 0
+        total_order_amount = OrderMain.objects.filter(order_status="delivered").aggregate(total=Sum('total_amount'))['total'] or 0
         
         # Total order count
-        total_order_count = OrderMain.objects.filter(order_status="Order Placed").aggregate(total_orders=Count('id'))['total_orders'] or 0
+        total_order_count = OrderMain.objects.filter(order_status="delivered").aggregate(total_orders=Count('id'))['total_orders'] or 0
         
         # Total discount
-        total_discount = OrderMain.objects.filter(order_status="Order Placed").aggregate(
+        total_discount = OrderMain.objects.filter(order_status="delivered").aggregate(
             total_discount=Sum(F('discount_amount'))
         )['total_discount'] or 0
         
@@ -55,14 +55,14 @@ def admin_home(request):
         current_month = now.month
         
         monthly_earnings = OrderMain.objects.filter(
-            order_status="Order Placed",
+            order_status="delivered",
             date__year=current_year,
             date__month=current_month
         ).aggregate(monthly_total=Sum('total_amount'))['monthly_total'] or 0
 
         # Data for the order chart
         monthly_order_count = OrderMain.objects.filter(
-            order_status="Order Placed"
+            order_status="delivered"
         ).annotate(
             month=ExtractMonth('date'),
             year=ExtractYear('date')
