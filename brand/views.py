@@ -24,7 +24,7 @@ def create_brand(request):
             brand_image=brand_image,
             is_active=status,
         )
-
+ 
         return redirect('brand:list_brand')
 
     return render(request, 'admindash/create_brand.html')
